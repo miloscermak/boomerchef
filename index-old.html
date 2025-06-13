@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boomerchef - Recepty s příběhem</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Boomerchef</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Domů</a></li>
+                <li><a href="recepty.html" class="nav-link">Recepty</a></li>
+                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="recipe-of-day">
+            <div class="recipe-container">
+                <div class="recipe-image">
+                    <img src="images/placeholder.jpg" alt="Načítá se recept..." id="recipe-image">
+                </div>
+                
+                <div class="recipe-content">
+                    <h2 class="recipe-title" id="recipe-title">Načítá se recept dne...</h2>
+                    
+                    <div class="recipe-story" id="recipe-story">
+                        <p>Načítám příběh receptu...</p>
+                    </div>
+
+                    <div class="recipe-section">
+                        <h3>Suroviny</h3>
+                        <ul class="ingredients-list" id="ingredients-list">
+                            <li>Načítám suroviny...</li>
+                        </ul>
+                    </div>
+
+                    <div class="recipe-section">
+                        <h3>Postup</h3>
+                        <ol class="instructions-list" id="instructions-list">
+                            <li>Načítám postup...</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Boomerchef - Recepty s příběhem</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

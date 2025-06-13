@@ -101,24 +101,26 @@ function createSimpleRecipeMeta(recipe) {
 function formatStoryText(story) {
     if (!story) return '';
     
-    // Rozdělíme text na odstavce podle prázdných řádků nebo dvojitých zalomení
-    const paragraphs = story
-        .split(/\n\s*\n|\r\n\s*\r\n/) // Rozdělení podle prázdných řádků
-        .map(p => p.trim())
-        .filter(p => p.length > 0);
+    // Nahradíme \n\n za skutečné odstavce
+    let formattedStory = story
+        .replace(/\n\s*\n/g, '</p><p>') // Dvojité zalomení = nový odstavec
+        .replace(/\r\n\s*\r\n/g, '</p><p>') // Windows line endings
+        .trim();
     
-    // Pokud nejsou nalezeny odstavce, zkusíme rozdělení podle delších vět
-    if (paragraphs.length === 1 && story.length > 200) {
-        const sentences = story.split(/\.\s+/);
-        const midPoint = Math.floor(sentences.length / 2);
-        return `
-            <p>${sentences.slice(0, midPoint).join('. ')}.</p>
-            <p>${sentences.slice(midPoint).join('. ')}</p>
-        `;
+    // Pokud text nezačína <p>, přidáme ho
+    if (!formattedStory.startsWith('<p>')) {
+        formattedStory = '<p>' + formattedStory;
     }
     
-    // Vytvoříme HTML odstavce
-    return paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('');
+    // Pokud text nekončí </p>, přidáme ho
+    if (!formattedStory.endsWith('</p>')) {
+        formattedStory = formattedStory + '</p>';
+    }
+    
+    // Nahradíme jednoduchá zalomení za <br>
+    formattedStory = formattedStory.replace(/\n/g, '<br>');
+    
+    return formattedStory;
 }
 
 // Funkce pro formátování kroků s lepší typografií
@@ -178,13 +180,41 @@ async function loadRandomRecipe() {
     try {
         const recipe = await RecipeService.getRandomRecipe();
         if (!recipe) {
-            console.error('Žádný recept nebyl nalezen');
+            console.log('Žádné recepty v databázi, zobrazujem placeholder');
+            displayPlaceholderRecipe();
             return;
         }
 
         displayRecipeOfDay(recipe);
     } catch (error) {
         console.error('Chyba při načítání náhodného receptu:', error);
+        displayPlaceholderRecipe();
+    }
+}
+
+// Zobrazení placeholder receptu pokud nejsou data
+function displayPlaceholderRecipe() {
+    const imageElement = document.getElementById('recipe-image');
+    const titleElement = document.getElementById('recipe-title');
+    const storyElement = document.getElementById('recipe-story');
+    const ingredientsElement = document.getElementById('ingredients-list');
+    const instructionsElement = document.getElementById('instructions-list');
+
+    if (imageElement) {
+        imageElement.src = 'images/placeholder.jpg';
+        imageElement.alt = 'Přidejte první recept';
+    }
+    if (titleElement) {
+        titleElement.textContent = 'Žádné recepty zatím nejsou';
+    }
+    if (storyElement) {
+        storyElement.innerHTML = '<p>Přidejte první recept přes <a href="admin.html" style="color: var(--primary-color);">administraci</a> a bude se zobrazovat zde jako "recept dne".</p>';
+    }
+    if (ingredientsElement) {
+        ingredientsElement.innerHTML = '<li>Zatím žádné suroviny</li>';
+    }
+    if (instructionsElement) {
+        instructionsElement.innerHTML = '<li>Zatím žádný postup</li>';
     }
 }
 

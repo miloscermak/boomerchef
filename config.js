@@ -259,5 +259,36 @@ const Utils = {
     isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
+    },
+
+    // Formátování příběhu s odstavci
+    formatStoryText(story, maxLength = null) {
+        if (!story) return '';
+        
+        // Zkrátíme text pokud je zadán maxLength
+        let text = maxLength && story.length > maxLength 
+            ? story.substring(0, maxLength) + '...' 
+            : story;
+        
+        // Nahradíme \n\n za skutečné odstavce
+        let formattedStory = text
+            .replace(/\n\s*\n/g, '</p><p>') // Dvojité zalomení = nový odstavec
+            .replace(/\r\n\s*\r\n/g, '</p><p>') // Windows line endings
+            .trim();
+        
+        // Pokud text nezačína <p>, přidáme ho
+        if (!formattedStory.startsWith('<p>')) {
+            formattedStory = '<p>' + formattedStory;
+        }
+        
+        // Pokud text nekončí </p>, přidáme ho
+        if (!formattedStory.endsWith('</p>')) {
+            formattedStory = formattedStory + '</p>';
+        }
+        
+        // Nahradíme jednoduchá zalomení za <br>
+        formattedStory = formattedStory.replace(/\n/g, '<br>');
+        
+        return formattedStory;
     }
 };

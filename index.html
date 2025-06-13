@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boomerchef - Recepty s příběhem</title>
+    <meta name="description" content="Elegantní web pro tradiční recepty s nostalgickými příběhy">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,46 +14,19 @@
     <header>
         <nav class="nav-container">
             <div class="logo">
-                <h1>Boomerchef</h1>
+                <h1><a href="/">Boomerchef</a></h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link active">Domů</a></li>
-                <li><a href="recepty.html" class="nav-link">Recepty</a></li>
-                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
+                <li><a href="/" class="nav-link">Domů</a></li>
+                <li><a href="/recepty" class="nav-link">Recepty</a></li>
+                <li><a href="/o-projektu" class="nav-link">O projektu</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="main-content">
-        <section class="recipe-of-day">
-            <div class="recipe-container">
-                <div class="recipe-image">
-                    <img src="images/placeholder.jpg" alt="Načítá se recept..." id="recipe-image">
-                </div>
-                
-                <div class="recipe-content">
-                    <h2 class="recipe-title" id="recipe-title">Načítá se recept dne...</h2>
-                    
-                    <div class="recipe-story" id="recipe-story">
-                        <p>Načítám příběh receptu...</p>
-                    </div>
-
-                    <div class="recipe-section">
-                        <h3>Suroviny</h3>
-                        <ul class="ingredients-list" id="ingredients-list">
-                            <li>Načítám suroviny...</li>
-                        </ul>
-                    </div>
-
-                    <div class="recipe-section">
-                        <h3>Postup</h3>
-                        <ol class="instructions-list" id="instructions-list">
-                            <li>Načítám postup...</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- Dynamický obsah se načte zde -->
+    <main id="app-content">
+        <div class="loading">Načítám...</div>
     </main>
 
     <footer>
@@ -61,8 +35,11 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js"></script>
+    <script src="router.js"></script>
+    <script src="pages.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
