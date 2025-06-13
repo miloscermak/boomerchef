@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boomerchef - Recepty s příběhem</title>
+    <meta name="description" content="Elegantní web pro tradiční recepty s nostalgickými příběhy">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <div class="logo">
+                <h1><a href="/">Boomerchef</a></h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Domů</a></li>
+                <li><a href="/recepty" class="nav-link">Recepty</a></li>
+                <li><a href="/o-projektu" class="nav-link">O projektu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Dynamický obsah se načte zde -->
+    <main id="app-content">
+        <div class="loading">Načítám...</div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Boomerchef - Recepty s příběhem</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="router.js"></script>
+    <script src="pages.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

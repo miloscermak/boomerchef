@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boomerchef - Recepty s příběhem</title>
-    <meta name="description" content="Elegantní web pro tradiční recepty s nostalgickými příběhy">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,19 +13,32 @@
     <header>
         <nav class="nav-container">
             <div class="logo">
-                <h1><a href="/">Boomerchef</a></h1>
+                <h1>Boomerchef</h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="/" class="nav-link">Domů</a></li>
-                <li><a href="/recepty" class="nav-link">Recepty</a></li>
-                <li><a href="/o-projektu" class="nav-link">O projektu</a></li>
+                <li><a href="#" class="nav-link active">Domů</a></li>
+                <li><a href="recepty.html" class="nav-link">Recepty</a></li>
+                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Dynamický obsah se načte zde -->
-    <main id="app-content">
-        <div class="loading">Načítám...</div>
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Recepty s příběhem</h1>
+                <p>Objevte tradiční chutě a vzpomínky, které se předávaly z generace na generaci</p>
+            </div>
+        </section>
+
+        <section class="recipe-of-day">
+            <div class="container">
+                <h2 class="section-title">Recept dne</h2>
+                <div id="recipe-of-day-content">
+                    <div class="loading">Načítám recept dne...</div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -35,11 +47,144 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="router.js"></script>
-    <script src="pages.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Jednoduchá verze bez routingu
+        async function loadRandomRecipe() {
+            try {
+                const recipe = await RecipeService.getRandomRecipe();
+                if (!recipe) {
+                    document.getElementById('recipe-of-day-content').innerHTML = `
+                        <div class="no-recipes">
+                            <p>Zatím zde nejsou žádné recepty.</p>
+                            <a href="admin.html" class="btn-primary">Přidat první recept</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
+                
+                const html = \`
+                    <article class="recipe-preview">
+                        <div class="recipe-preview-image">
+                            <img src="\${imageUrl}" alt="\${recipe.image_alt || recipe.title}">
+                        </div>
+                        <div class="recipe-preview-content">
+                            <h3>\${recipe.title}</h3>
+                            <div class="recipe-story-preview">
+                                \${Utils.formatStoryText(recipe.story, 200)}
+                            </div>
+                            <a href="recepty.html" class="btn-primary">Zobrazit všechny recepty</a>
+                        </div>
+                    </article>
+                \`;
+                
+                document.getElementById('recipe-of-day-content').innerHTML = html;
+            } catch (error) {
+                console.error('Chyba:', error);
+                document.getElementById('recipe-of-day-content').innerHTML = `
+                    <div class="error">
+                        <p>Chyba při načítání receptu. Zkontrolujte Supabase konfiguraci.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Spustit při načtení
+        document.addEventListener('DOMContentLoaded', loadRandomRecipe);
+    </script>
+
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--light-gray) 100%);
+            padding: var(--spacing-xxl) 0;
+            text-align: center;
+        }
+        
+        .hero-content h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--medium-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .recipe-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .recipe-preview-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .recipe-preview-content {
+            padding: var(--spacing-lg);
+        }
+        
+        .recipe-preview-content h3 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .recipe-story-preview {
+            color: var(--medium-gray);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .loading, .no-recipes, .error {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--medium-gray);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .recipe-preview {
+                grid-template-columns: 1fr;
+            }
+            
+            .recipe-preview-image img {
+                height: 200px;
+            }
+        }
+    </style>
 </body>
 </html>
