@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Recept - Boomerchef</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <div class="logo">
+                <h1><a href="index.html">Boomerchef</a></h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Domů</a></li>
+                <li><a href="recepty.html" class="nav-link">Recepty</a></li>
+                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div id="recipe-content">
+            <div class="loading">
+                <p>Načítám recept...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Boomerchef - Recepty s příběhem</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        // Získání slug z URL parametrů
+        function getSlugFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('slug');
+        }
+
+        // Načtení a zobrazení receptu
+        async function loadRecipe() {
+            const slug = getSlugFromURL();
+            
+            if (!slug) {
+                document.getElementById('recipe-content').innerHTML = `
+                    <div class="error">
+                        <h2>Recept nenalezen</h2>
+                        <p>Recept nebyl nalezen nebo URL není správná.</p>
+                        <a href="recepty.html" class="btn-primary">Zpět na recepty</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const recipe = await RecipeService.getRecipeBySlug(slug);
+                
+                if (!recipe) {
+                    document.getElementById('recipe-content').innerHTML = `
+                        <div class="error">
+                            <h2>Recept nenalezen</h2>
+                            <p>Recept s tímto názvem neexistuje nebo nebyl publikován.</p>
+                            <a href="recepty.html" class="btn-primary">Zpět na recepty</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Nastavení title stránky
+                document.getElementById('page-title').textContent = `${recipe.title} - Boomerchef`;
+                
+                // Vytvoření HTML pro recept
+                const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
+                
+                const ingredientsList = recipe.ingredients ? 
+                    recipe.ingredients.split('\n')
+                        .filter(ingredient => ingredient.trim())
+                        .map(ingredient => `<li>${ingredient.trim()}</li>`)
+                        .join('') : '';
+
+                const instructionsList = recipe.instructions ? 
+                    recipe.instructions.split('\n')
+                        .filter(instruction => instruction.trim())
+                        .map(instruction => `<li>${instruction.trim()}</li>`)
+                        .join('') : '';
+
+                const recipeHTML = `
+                    <article class="recipe-detail">
+                        <header class="recipe-header">
+                            <nav class="breadcrumb">
+                                <a href="index.html">Domů</a> > 
+                                <a href="recepty.html">Recepty</a> > 
+                                <span>${recipe.title}</span>
+                            </nav>
+                            <h1 class="recipe-title">${recipe.title}</h1>
+                            <div class="recipe-meta">
+                                <span>Publikováno: ${Utils.formatDate(recipe.created_at)}</span>
+                                ${recipe.prep_time ? `<span>Příprava: ${recipe.prep_time} min</span>` : ''}
+                                ${recipe.cook_time ? `<span>Vaření: ${recipe.cook_time} min</span>` : ''}
+                                ${recipe.servings ? `<span>Porce: ${recipe.servings}</span>` : ''}
+                            </div>
+                        </header>
+
+                        <div class="recipe-container">
+                            <div class="recipe-image">
+                                <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                            </div>
+                            
+                            <div class="recipe-content">
+                                ${recipe.story ? `
+                                    <div class="recipe-story">
+                                        ${Utils.formatStoryText(recipe.story)}
+                                    </div>
+                                ` : ''}
+
+                                <div class="recipe-section">
+                                    <h3>Ingredience</h3>
+                                    <ul class="ingredients-list">
+                                        ${ingredientsList}
+                                    </ul>
+                                </div>
+
+                                <div class="recipe-section">
+                                    <h3>Postup přípravy</h3>
+                                    <ol class="instructions-list">
+                                        ${instructionsList}
+                                    </ol>
+                                </div>
+
+                                ${recipe.notes ? `
+                                    <div class="recipe-section">
+                                        <h3>Poznámky</h3>
+                                        <div class="recipe-notes">
+                                            ${Utils.formatStoryText(recipe.notes)}
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                <div class="recipe-actions">
+                                    <button onclick="window.print()" class="btn-primary">Vytisknout recept</button>
+                                    <a href="recepty.html" class="btn-secondary">Zpět na recepty</a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `;
+
+                document.getElementById('recipe-content').innerHTML = recipeHTML;
+
+            } catch (error) {
+                console.error('Chyba při načítání receptu:', error);
+                document.getElementById('recipe-content').innerHTML = `
+                    <div class="error">
+                        <h2>Chyba při načítání</h2>
+                        <p>Nastala chyba při načítání receptu. Zkuste to prosím znovu.</p>
+                        <a href="recepty.html" class="btn-primary">Zpět na recepty</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Spustit při načtení stránky
+        document.addEventListener('DOMContentLoaded', loadRecipe);
+    </script>
+
+    <style>
+        .breadcrumb {
+            margin-bottom: var(--spacing-md);
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .recipe-detail {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .recipe-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+            margin-top: var(--spacing-md);
+        }
+
+        .recipe-actions {
+            margin-top: var(--spacing-xl);
+            text-align: center;
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #723708;
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .btn-secondary:hover {
+            background: var(--medium-gray);
+            color: var(--white);
+        }
+
+        .error {
+            text-align: center;
+            padding: var(--spacing-xxl);
+        }
+
+        .error h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            color: var(--medium-gray);
+        }
+
+        .recipe-notes {
+            background: var(--cream);
+            padding: var(--spacing-md);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .recipe-meta {
+                flex-direction: column;
+                gap: var(--spacing-xs);
+            }
+
+            .recipe-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 200px;
+            }
+        }
+    </style>
+</body>
+</html>

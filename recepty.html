@@ -38,63 +38,6 @@
             </div>
         </section>
 
-        <!-- Modal pro detail receptu -->
-        <div id="recipe-modal" class="modal" style="display: none;">
-            <div class="modal-content article-style">
-                <button class="close-simple" onclick="closeRecipe()">×</button>
-                
-                <!-- Článkový layout -->
-                <article class="recipe-article">
-                    
-                    <!-- Hlavička článku -->
-                    <header class="article-header">
-                        <h1 class="article-title" id="modal-recipe-title">Název receptu</h1>
-                        <div class="article-meta" id="modal-recipe-meta">
-                            <!-- Metadata -->
-                        </div>
-                    </header>
-
-                    <!-- Hlavní obrázek -->
-                    <figure class="article-image">
-                        <img id="modal-recipe-image" src="" alt="">
-                    </figure>
-
-                    <!-- Obsah článku -->
-                    <div class="article-content">
-                        
-                        <!-- Úvodní příběh -->
-                        <div class="story-section" id="modal-recipe-story">
-                            <!-- Příběh se načte zde -->
-                        </div>
-
-                        <!-- Suroviny -->
-                        <section class="ingredients-section">
-                            <h2>Suroviny</h2>
-                            <ul class="simple-ingredients" id="modal-ingredients-list">
-                                <!-- Suroviny se načtou zde -->
-                            </ul>
-                        </section>
-
-                        <!-- Postup -->
-                        <section class="instructions-section">
-                            <h2>Postup</h2>
-                            <ol class="simple-instructions" id="modal-instructions-list">
-                                <!-- Postup se načte zde -->
-                            </ol>
-                        </section>
-
-                    </div>
-
-                    <!-- Footer článku -->
-                    <footer class="article-footer">
-                        <button onclick="printRecipe()" class="print-button">
-                            Vytisknout recept
-                        </button>
-                    </footer>
-
-                </article>
-            </div>
-        </div>
     </main>
 
     <footer>
@@ -105,6 +48,54 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // Načtení všech receptů
+        async function loadAllRecipes() {
+            try {
+                const recipes = await RecipeService.getAllRecipes();
+                const recipesGrid = document.getElementById('recipes-grid');
+                
+                if (!recipes || recipes.length === 0) {
+                    recipesGrid.innerHTML = `
+                        <div class="text-center">
+                            <p>Zatím zde nejsou žádné recepty.</p>
+                            <a href="admin.html" class="btn-primary">Přidat první recept</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const recipesHTML = recipes.map(recipe => {
+                    const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
+                    const shortStory = recipe.story ? recipe.story.substring(0, 150) + '...' : '';
+                    
+                    return `
+                        <div class="recipe-card" onclick="window.location.href='recept.html?slug=${recipe.slug}'">
+                            <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                            <div class="recipe-card-content">
+                                <h3>${recipe.title}</h3>
+                                <p>${shortStory}</p>
+                                <div class="recipe-meta">
+                                    <small>${Utils.formatDate(recipe.created_at)}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                recipesGrid.innerHTML = recipesHTML;
+            } catch (error) {
+                console.error('Chyba při načítání receptů:', error);
+                document.getElementById('recipes-grid').innerHTML = `
+                    <div class="text-center">
+                        <p>Chyba při načítání receptů. Zkontrolujte Supabase konfiguraci.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Spustit při načtení stránky
+        document.addEventListener('DOMContentLoaded', loadAllRecipes);
+    </script>
 </body>
 </html>

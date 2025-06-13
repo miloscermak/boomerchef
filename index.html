@@ -76,7 +76,10 @@
                             <div class="recipe-story-preview">
                                 \${Utils.formatStoryText(recipe.story, 200)}
                             </div>
-                            <a href="recepty.html" class="btn-primary">Zobrazit všechny recepty</a>
+                            <div class="recipe-actions">
+                                <a href="recept.html?slug=\${recipe.slug}" class="btn-primary">Zobrazit recept</a>
+                                <a href="recepty.html" class="btn-secondary">Všechny recepty</a>
+                            </div>
                         </div>
                     </article>
                 \`;
@@ -164,6 +167,13 @@
             color: var(--medium-gray);
             line-height: 1.6;
             margin-bottom: var(--spacing-md);
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
         
         .loading, .no-recipes, .error {

@@ -270,25 +270,20 @@ const Utils = {
             ? story.substring(0, maxLength) + '...' 
             : story;
         
-        // Nahradíme \n\n za skutečné odstavce
-        let formattedStory = text
-            .replace(/\n\s*\n/g, '</p><p>') // Dvojité zalomení = nový odstavec
-            .replace(/\r\n\s*\r\n/g, '</p><p>') // Windows line endings
-            .trim();
+        // Rozdělíme text na odstavce podle prázdných řádků
+        const paragraphs = text
+            .split(/\n\s*\n|\r\n\s*\r\n/) // Rozdělení podle prázdných řádků
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
         
-        // Pokud text nezačína <p>, přidáme ho
-        if (!formattedStory.startsWith('<p>')) {
-            formattedStory = '<p>' + formattedStory;
+        // Pokud nejsou nalezeny odstavce, celý text jako jeden odstavec
+        if (paragraphs.length <= 1) {
+            return `<p style="margin-bottom: 1.5rem;">${text.replace(/\n/g, '<br>')}</p>`;
         }
         
-        // Pokud text nekončí </p>, přidáme ho
-        if (!formattedStory.endsWith('</p>')) {
-            formattedStory = formattedStory + '</p>';
-        }
-        
-        // Nahradíme jednoduchá zalomení za <br>
-        formattedStory = formattedStory.replace(/\n/g, '<br>');
-        
-        return formattedStory;
+        // Vytvoříme HTML odstavce s mezerami
+        return paragraphs
+            .map(paragraph => `<p style="margin-bottom: 1.5rem; line-height: 1.7;">${paragraph.replace(/\n/g, '<br>')}</p>`)
+            .join('');
     }
 };

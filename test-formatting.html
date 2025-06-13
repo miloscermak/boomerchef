@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test formátování</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; max-width: 800px; }
+        .test-result { border: 1px solid #ccc; padding: 1rem; margin: 1rem 0; }
+    </style>
+</head>
+<body>
+    <h1>Test formátování odstavců</h1>
+    
+    <h2>Test text:</h2>
+    <pre id="test-input"></pre>
+    
+    <h2>Výsledek formátování:</h2>
+    <div id="test-output" class="test-result"></div>
+    
+    <script src="config.js"></script>
+    <script>
+        const testText = `Tento recept jsem dostala od své babičky, která ho předávala z generace na generaci.
+
+Když jsem byla malá, vždy jsem se těšila na víkendy u babičky, protože věděla, že mě naučí něco nového v kuchyni.
+
+Tento konkrétní pokrm připravovala vždycky, když k nám přišla návštěva. Jeho vůně se šířila celým domem a všichni věděli, že je to něco výjimečného.`;
+
+        document.getElementById('test-input').textContent = testText;
+        document.getElementById('test-output').innerHTML = Utils.formatStoryText(testText);
+    </script>
+</body>
+</html>
