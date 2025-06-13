@@ -41,7 +41,10 @@ function displayRecipeInModal(recipe) {
     document.getElementById('modal-recipe-image').src = imageUrl;
     document.getElementById('modal-recipe-image').alt = recipe.image_alt || recipe.title;
     document.getElementById('modal-recipe-title').textContent = recipe.title;
-    document.getElementById('modal-recipe-story').innerHTML = `<p>${recipe.story}</p>`;
+    
+    // Zpracování příběhu - respektování odstavců
+    const storyElement = document.getElementById('modal-recipe-story');
+    storyElement.innerHTML = formatStoryText(recipe.story);
 
     // Naplníme seznam surovin
     const ingredientsList = document.getElementById('modal-ingredients-list');
@@ -55,15 +58,60 @@ function displayRecipeInModal(recipe) {
     // Naplníme postup
     const instructionsList = document.getElementById('modal-instructions-list');
     instructionsList.innerHTML = '';
-    recipe.instructions.forEach(instruction => {
+    recipe.instructions.forEach((instruction, index) => {
         const li = document.createElement('li');
-        li.textContent = instruction;
+        li.innerHTML = formatInstructionText(instruction, index + 1);
         instructionsList.appendChild(li);
     });
 
     // Zobrazíme modal
     document.getElementById('recipe-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
+}
+
+// Funkce pro formátování příběhu s odstavci
+function formatStoryText(story) {
+    if (!story) return '';
+    
+    // Rozdělíme text na odstavce podle prázdných řádků nebo dvojitých zalomení
+    const paragraphs = story
+        .split(/\n\s*\n|\r\n\s*\r\n/) // Rozdělení podle prázdných řádků
+        .map(p => p.trim())
+        .filter(p => p.length > 0);
+    
+    // Pokud nejsou nalezeny odstavce, zkusíme rozdělení podle delších vět
+    if (paragraphs.length === 1 && story.length > 200) {
+        const sentences = story.split(/\.\s+/);
+        const midPoint = Math.floor(sentences.length / 2);
+        return `
+            <p>${sentences.slice(0, midPoint).join('. ')}.</p>
+            <p>${sentences.slice(midPoint).join('. ')}</p>
+        `;
+    }
+    
+    // Vytvoříme HTML odstavce
+    return paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('');
+}
+
+// Funkce pro formátování kroků s lepší typografií
+function formatInstructionText(instruction, stepNumber) {
+    if (!instruction) return '';
+    
+    // Pokud instrukce obsahuje více vět, rozdělíme je
+    if (instruction.includes('. ') && instruction.length > 80) {
+        const sentences = instruction.split('. ');
+        const mainSentence = sentences[0] + '.';
+        const additionalInfo = sentences.slice(1).join('. ');
+        
+        if (additionalInfo) {
+            return `
+                <strong>${mainSentence}</strong>
+                <span class="instruction-detail">${additionalInfo}</span>
+            `;
+        }
+    }
+    
+    return instruction;
 }
 
 // Funkce pro zavření detailu receptu
@@ -127,7 +175,7 @@ function displayRecipeOfDay(recipe) {
         imageElement.alt = recipe.image_alt || recipe.title;
     }
     if (titleElement) titleElement.textContent = recipe.title;
-    if (storyElement) storyElement.innerHTML = `<p>${recipe.story}</p>`;
+    if (storyElement) storyElement.innerHTML = formatStoryText(recipe.story);
 
     if (ingredientsElement) {
         ingredientsElement.innerHTML = '';
@@ -140,9 +188,9 @@ function displayRecipeOfDay(recipe) {
 
     if (instructionsElement) {
         instructionsElement.innerHTML = '';
-        recipe.instructions.forEach(instruction => {
+        recipe.instructions.forEach((instruction, index) => {
             const li = document.createElement('li');
-            li.textContent = instruction;
+            li.innerHTML = formatInstructionText(instruction, index + 1);
             instructionsElement.appendChild(li);
         });
     }
