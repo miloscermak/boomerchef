@@ -415,7 +415,7 @@ footer {
     animation: fadeIn 0.6s ease-out;
 }
 
-/* Modal styly - nový card design */
+/* Modal styly - jednoduchý článkový design */
 .modal {
     position: fixed;
     z-index: 1000;
@@ -423,220 +423,209 @@ footer {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.85);
-    backdrop-filter: blur(6px);
+    background-color: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.modal-content.article-style {
     background-color: var(--white);
-    margin: 1% auto;
+    margin: 2% auto;
     padding: 0;
-    width: 95%;
-    max-width: 900px;
-    max-height: 95vh;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
     overflow-y: auto;
-    border-radius: 16px;
+    border-radius: 8px;
     position: relative;
-    animation: modalSlideIn 0.4s ease-out;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
-/* Hero sekce */
-.recipe-hero {
-    position: relative;
-    margin-bottom: var(--spacing-xl);
-}
-
-.recipe-hero-image {
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-    border-radius: 16px 16px 0 0;
-    position: relative;
-}
-
-.recipe-hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.recipe-hero-image::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.6));
-}
-
-.recipe-hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--spacing-lg);
-    color: var(--white);
-    z-index: 2;
-}
-
-.recipe-hero-title {
-    font-size: 2.5rem;
-    font-family: var(--font-serif);
-    font-weight: 700;
-    margin: 0 0 var(--spacing-sm) 0;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-    line-height: 1.2;
-}
-
-.recipe-meta {
-    display: flex;
-    gap: var(--spacing-md);
-    font-size: 0.95rem;
-    opacity: 0.95;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-/* Card layout */
-.recipe-cards {
-    padding: var(--spacing-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-.recipe-card {
-    background: var(--cream);
-    border-radius: 12px;
-    padding: var(--spacing-lg);
-    border: 1px solid rgba(139, 69, 19, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.recipe-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15);
-}
-
-.card-icon {
+/* Článkový design */
+.close-simple {
     position: absolute;
     top: var(--spacing-md);
     right: var(--spacing-md);
-    font-size: 1.5rem;
-    opacity: 0.7;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--medium-gray);
+    cursor: pointer;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
 }
 
-.card-title {
-    color: var(--primary-color);
-    font-family: var(--font-serif);
-    font-size: 1.4rem;
-    margin: 0 0 var(--spacing-md) 0;
-    font-weight: 600;
+.close-simple:hover {
+    background: var(--light-gray);
+    color: var(--dark-gray);
 }
 
-.card-content {
+.recipe-article {
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    max-width: 600px;
+    margin: 0 auto;
     line-height: 1.7;
 }
 
-/* Moderní seznamy */
-.modern-ingredients-list {
+/* Hlavička článku */
+.article-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    border-bottom: 1px solid var(--light-gray);
+    padding-bottom: var(--spacing-lg);
+}
+
+.article-title {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: 1.3;
+}
+
+.article-meta {
+    color: var(--medium-gray);
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: inline-block;
+}
+
+/* Hlavní obrázek */
+.article-image {
+    margin: 0 0 var(--spacing-xl) 0;
+}
+
+.article-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Obsah článku */
+.article-content {
+    font-size: 1.1rem;
+    color: var(--dark-gray);
+}
+
+.story-section {
+    margin-bottom: var(--spacing-xl);
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--medium-gray);
+    font-style: italic;
+    border-left: 4px solid var(--primary-color);
+    padding-left: var(--spacing-md);
+    background: var(--cream);
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+    border-radius: 0 8px 8px 0;
+}
+
+.story-section p {
+    margin-bottom: var(--spacing-md);
+}
+
+.story-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Sekce */
+.ingredients-section,
+.instructions-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.article-content h2 {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin: 0 0 var(--spacing-md) 0;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: var(--spacing-xs);
+}
+
+/* Jednoduché seznamy */
+.simple-ingredients {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    gap: var(--spacing-sm);
 }
 
-.modern-ingredients-list li {
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--white);
-    border-radius: 8px;
-    border-left: 3px solid var(--primary-color);
+.simple-ingredients li {
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--light-gray);
     position: relative;
-    transition: all 0.2s ease;
+    padding-left: var(--spacing-md);
 }
 
-.modern-ingredients-list li:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
+.simple-ingredients li:before {
+    content: '•';
+    color: var(--primary-color);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
 }
 
-.modern-instructions-list {
+.simple-instructions {
     list-style: none;
     counter-reset: step-counter;
     padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
 }
 
-.modern-instructions-list li {
+.simple-instructions li {
     counter-increment: step-counter;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-xl);
-    background: var(--white);
-    border-radius: 8px;
+    margin-bottom: var(--spacing-md);
     position: relative;
-    border: 1px solid rgba(139, 69, 19, 0.1);
-    transition: all 0.3s ease;
+    padding-left: var(--spacing-lg);
+    line-height: 1.7;
 }
 
-.modern-instructions-list li:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
-}
-
-.modern-instructions-list li::before {
-    content: counter(step-counter);
+.simple-instructions li:before {
+    content: counter(step-counter) ".";
     position: absolute;
-    left: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--primary-color);
-    color: var(--white);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    left: 0;
+    top: 0;
+    color: var(--primary-color);
     font-weight: 600;
-    font-size: 0.9rem;
+    min-width: var(--spacing-md);
 }
 
-/* Actions */
-.recipe-actions {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    border-top: 1px solid rgba(139, 69, 19, 0.1);
+/* Footer článku */
+.article-footer {
+    margin-top: var(--spacing-xxl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--light-gray);
     text-align: center;
 }
 
-.action-btn {
+.print-button {
     background: var(--primary-color);
     color: var(--white);
     border: none;
     padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 1rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+    transition: background 0.3s ease;
 }
 
-.action-btn:hover {
+.print-button:hover {
     background: #723708;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
 }
 
 @keyframes modalSlideIn {
@@ -673,69 +662,47 @@ footer {
     background-color: rgba(139, 69, 19, 0.1);
 }
 
-/* Responsivita nového designu */
+/* Responsivita článkového designu */
 @media (max-width: 768px) {
-    .modal-content {
-        margin: 2% auto;
-        width: 98%;
+    .modal-content.article-style {
+        margin: 1% auto;
+        width: 95%;
         max-height: 95vh;
-        border-radius: 12px;
+        border-radius: 6px;
     }
     
-    .recipe-hero-image {
-        height: 200px;
+    .recipe-article {
+        padding: var(--spacing-lg) var(--spacing-md);
     }
     
-    .recipe-hero-title {
+    .article-title {
         font-size: 1.8rem;
     }
     
-    .recipe-meta {
-        flex-wrap: wrap;
-        gap: var(--spacing-sm);
+    .article-meta {
+        flex-direction: column;
+        gap: var(--spacing-xs);
     }
     
-    .recipe-cards {
-        padding: var(--spacing-md);
-        gap: var(--spacing-md);
+    .article-content {
+        font-size: 1rem;
     }
     
-    .recipe-card {
-        padding: var(--spacing-md);
+    .story-section {
+        font-size: 1.05rem;
+        padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md);
     }
     
-    .card-title {
-        font-size: 1.2rem;
+    .article-content h2 {
+        font-size: 1.4rem;
     }
     
-    .card-icon {
-        font-size: 1.2rem;
-        top: var(--spacing-sm);
-        right: var(--spacing-sm);
-    }
-    
-    .modern-instructions-list li {
-        padding-left: var(--spacing-lg);
-    }
-    
-    .modern-instructions-list li::before {
-        width: 28px;
-        height: 28px;
-        font-size: 0.8rem;
-    }
-    
-    .recipe-actions {
-        padding: var(--spacing-md);
-    }
-    
-    .close {
-        top: var(--spacing-sm);
-        right: var(--spacing-sm);
-        font-size: 1.5rem;
+    .close-simple {
+        top: var(--spacing-xs);
+        right: var(--spacing-xs);
+        font-size: 1.8rem;
         width: 35px;
         height: 35px;
-        background: rgba(0,0,0,0.7);
-        border-radius: 50%;
     }
 }
 

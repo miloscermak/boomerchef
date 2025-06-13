@@ -40,61 +40,59 @@
 
         <!-- Modal pro detail receptu -->
         <div id="recipe-modal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close" onclick="closeRecipe()">&times;</span>
+            <div class="modal-content article-style">
+                <button class="close-simple" onclick="closeRecipe()">×</button>
                 
-                <!-- Hero sekce s obrázkem a názvem -->
-                <div class="recipe-hero">
-                    <div class="recipe-hero-image">
-                        <img id="modal-recipe-image" src="" alt="">
-                    </div>
-                    <div class="recipe-hero-content">
-                        <h1 class="recipe-hero-title" id="modal-recipe-title"></h1>
-                        <div class="recipe-meta" id="modal-recipe-meta">
-                            <!-- Metadata se naplní JavaScriptem -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card layout pro obsah -->
-                <div class="recipe-cards">
+                <!-- Článkový layout -->
+                <article class="recipe-article">
                     
-                    <!-- Příběh receptu -->
-                    <div class="recipe-card story-card">
-                        <div class="card-icon">📖</div>
-                        <h3 class="card-title">Příběh receptu</h3>
-                        <div class="card-content" id="modal-recipe-story">
+                    <!-- Hlavička článku -->
+                    <header class="article-header">
+                        <h1 class="article-title" id="modal-recipe-title">Název receptu</h1>
+                        <div class="article-meta" id="modal-recipe-meta">
+                            <!-- Metadata -->
                         </div>
-                    </div>
+                    </header>
 
-                    <!-- Suroviny -->
-                    <div class="recipe-card ingredients-card">
-                        <div class="card-icon">🥄</div>
-                        <h3 class="card-title">Suroviny</h3>
-                        <div class="card-content">
-                            <ul class="modern-ingredients-list" id="modal-ingredients-list">
+                    <!-- Hlavní obrázek -->
+                    <figure class="article-image">
+                        <img id="modal-recipe-image" src="" alt="">
+                    </figure>
+
+                    <!-- Obsah článku -->
+                    <div class="article-content">
+                        
+                        <!-- Úvodní příběh -->
+                        <div class="story-section" id="modal-recipe-story">
+                            <!-- Příběh se načte zde -->
+                        </div>
+
+                        <!-- Suroviny -->
+                        <section class="ingredients-section">
+                            <h2>Suroviny</h2>
+                            <ul class="simple-ingredients" id="modal-ingredients-list">
+                                <!-- Suroviny se načtou zde -->
                             </ul>
-                        </div>
-                    </div>
+                        </section>
 
-                    <!-- Postup -->
-                    <div class="recipe-card instructions-card">
-                        <div class="card-icon">👩‍🍳</div>
-                        <h3 class="card-title">Postup přípravy</h3>
-                        <div class="card-content">
-                            <ol class="modern-instructions-list" id="modal-instructions-list">
+                        <!-- Postup -->
+                        <section class="instructions-section">
+                            <h2>Postup</h2>
+                            <ol class="simple-instructions" id="modal-instructions-list">
+                                <!-- Postup se načte zde -->
                             </ol>
-                        </div>
+                        </section>
+
                     </div>
 
-                </div>
+                    <!-- Footer článku -->
+                    <footer class="article-footer">
+                        <button onclick="printRecipe()" class="print-button">
+                            Vytisknout recept
+                        </button>
+                    </footer>
 
-                <!-- Akce -->
-                <div class="recipe-actions">
-                    <button onclick="printRecipe()" class="action-btn print-btn">
-                        📄 Vytisknout recept
-                    </button>
-                </div>
+                </article>
             </div>
         </div>
     </main>
