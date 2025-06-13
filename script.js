@@ -34,19 +34,23 @@ async function openRecipeById(recipeId) {
     }
 }
 
-// Zobrazení receptu v modalu
+// Zobrazení receptu v modalu - nový card design
 function displayRecipeInModal(recipe) {
-    // Naplníme modal obsahem
+    // Hero sekce
     const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.jpg';
     document.getElementById('modal-recipe-image').src = imageUrl;
     document.getElementById('modal-recipe-image').alt = recipe.image_alt || recipe.title;
     document.getElementById('modal-recipe-title').textContent = recipe.title;
     
-    // Zpracování příběhu - respektování odstavců
+    // Metadata
+    const metaElement = document.getElementById('modal-recipe-meta');
+    metaElement.innerHTML = createRecipeMeta(recipe);
+    
+    // Příběh receptu
     const storyElement = document.getElementById('modal-recipe-story');
     storyElement.innerHTML = formatStoryText(recipe.story);
 
-    // Naplníme seznam surovin
+    // Moderní seznam surovin
     const ingredientsList = document.getElementById('modal-ingredients-list');
     ingredientsList.innerHTML = '';
     recipe.ingredients.forEach(ingredient => {
@@ -55,7 +59,7 @@ function displayRecipeInModal(recipe) {
         ingredientsList.appendChild(li);
     });
 
-    // Naplníme postup
+    // Moderní seznam postupu
     const instructionsList = document.getElementById('modal-instructions-list');
     instructionsList.innerHTML = '';
     recipe.instructions.forEach((instruction, index) => {
@@ -67,6 +71,30 @@ function displayRecipeInModal(recipe) {
     // Zobrazíme modal
     document.getElementById('recipe-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
+}
+
+// Vytvoření metadata pro recept
+function createRecipeMeta(recipe) {
+    const meta = [];
+    
+    if (recipe.cooking_time) {
+        meta.push(`<span class="meta-item">⏱️ ${recipe.cooking_time} min</span>`);
+    }
+    
+    if (recipe.servings) {
+        meta.push(`<span class="meta-item">👥 ${recipe.servings} ${recipe.servings === 1 ? 'porce' : recipe.servings < 5 ? 'porce' : 'porcí'}</span>`);
+    }
+    
+    if (recipe.difficulty_level) {
+        const difficulty = ['', 'Velmi snadné', 'Snadné', 'Střední', 'Náročné', 'Velmi náročné'];
+        meta.push(`<span class="meta-item">⭐ ${difficulty[recipe.difficulty_level]}</span>`);
+    }
+    
+    if (recipe.category) {
+        meta.push(`<span class="meta-item">🍽️ ${recipe.category}</span>`);
+    }
+    
+    return meta.join('');
 }
 
 // Funkce pro formátování příběhu s odstavci

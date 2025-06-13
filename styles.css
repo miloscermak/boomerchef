@@ -415,7 +415,7 @@ footer {
     animation: fadeIn 0.6s ease-out;
 }
 
-/* Modal styly */
+/* Modal styly - nový card design */
 .modal {
     position: fixed;
     z-index: 1000;
@@ -423,30 +423,220 @@ footer {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.8);
-    backdrop-filter: blur(4px);
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
 }
 
 .modal-content {
-    background-color: var(--cream);
-    margin: 2% auto;
-    padding: var(--spacing-xl);
-    width: 95%;
-    max-width: 1000px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 12px;
-    position: relative;
-    animation: modalSlideIn 0.3s ease-out;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.modal-content .recipe-container {
-    gap: var(--spacing-xl);
-}
-
-.modal-content .recipe-content {
+    background-color: var(--white);
+    margin: 1% auto;
     padding: 0;
+    width: 95%;
+    max-width: 900px;
+    max-height: 95vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    position: relative;
+    animation: modalSlideIn 0.4s ease-out;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+}
+
+/* Hero sekce */
+.recipe-hero {
+    position: relative;
+    margin-bottom: var(--spacing-xl);
+}
+
+.recipe-hero-image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+}
+
+.recipe-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.recipe-hero-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.6));
+}
+
+.recipe-hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-lg);
+    color: var(--white);
+    z-index: 2;
+}
+
+.recipe-hero-title {
+    font-size: 2.5rem;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    margin: 0 0 var(--spacing-sm) 0;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    line-height: 1.2;
+}
+
+.recipe-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* Card layout */
+.recipe-cards {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.recipe-card {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: var(--spacing-lg);
+    border: 1px solid rgba(139, 69, 19, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.recipe-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15);
+}
+
+.card-icon {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+.card-title {
+    color: var(--primary-color);
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    margin: 0 0 var(--spacing-md) 0;
+    font-weight: 600;
+}
+
+.card-content {
+    line-height: 1.7;
+}
+
+/* Moderní seznamy */
+.modern-ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.modern-ingredients-list li {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--white);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.modern-ingredients-list li:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
+}
+
+.modern-instructions-list {
+    list-style: none;
+    counter-reset: step-counter;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.modern-instructions-list li {
+    counter-increment: step-counter;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-xl);
+    background: var(--white);
+    border-radius: 8px;
+    position: relative;
+    border: 1px solid rgba(139, 69, 19, 0.1);
+    transition: all 0.3s ease;
+}
+
+.modern-instructions-list li:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.1);
+}
+
+.modern-instructions-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-color);
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Actions */
+.recipe-actions {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-top: 1px solid rgba(139, 69, 19, 0.1);
+    text-align: center;
+}
+
+.action-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.action-btn:hover {
+    background: #723708;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
 }
 
 @keyframes modalSlideIn {
@@ -483,21 +673,69 @@ footer {
     background-color: rgba(139, 69, 19, 0.1);
 }
 
-/* Responsivita modalu */
+/* Responsivita nového designu */
 @media (max-width: 768px) {
     .modal-content {
-        margin: 5% auto;
-        padding: var(--spacing-md);
+        margin: 2% auto;
         width: 98%;
-        max-height: 85vh;
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+    
+    .recipe-hero-image {
+        height: 200px;
+    }
+    
+    .recipe-hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .recipe-meta {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+    
+    .recipe-cards {
+        padding: var(--spacing-md);
+        gap: var(--spacing-md);
+    }
+    
+    .recipe-card {
+        padding: var(--spacing-md);
+    }
+    
+    .card-title {
+        font-size: 1.2rem;
+    }
+    
+    .card-icon {
+        font-size: 1.2rem;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+    }
+    
+    .modern-instructions-list li {
+        padding-left: var(--spacing-lg);
+    }
+    
+    .modern-instructions-list li::before {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .recipe-actions {
+        padding: var(--spacing-md);
     }
     
     .close {
-        top: var(--spacing-xs);
+        top: var(--spacing-sm);
         right: var(--spacing-sm);
         font-size: 1.5rem;
         width: 35px;
         height: 35px;
+        background: rgba(0,0,0,0.7);
+        border-radius: 50%;
     }
 }
 

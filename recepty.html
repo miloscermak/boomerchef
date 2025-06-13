@@ -42,29 +42,58 @@
         <div id="recipe-modal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close" onclick="closeRecipe()">&times;</span>
-                <div class="recipe-container">
-                    <div class="recipe-image">
+                
+                <!-- Hero sekce s obrázkem a názvem -->
+                <div class="recipe-hero">
+                    <div class="recipe-hero-image">
                         <img id="modal-recipe-image" src="" alt="">
                     </div>
-                    
-                    <div class="recipe-content">
-                        <h2 class="recipe-title" id="modal-recipe-title"></h2>
-                        
-                        <div class="recipe-story" id="modal-recipe-story">
+                    <div class="recipe-hero-content">
+                        <h1 class="recipe-hero-title" id="modal-recipe-title"></h1>
+                        <div class="recipe-meta" id="modal-recipe-meta">
+                            <!-- Metadata se naplní JavaScriptem -->
                         </div>
+                    </div>
+                </div>
 
-                        <div class="recipe-section">
-                            <h3>Suroviny</h3>
-                            <ul class="ingredients-list" id="modal-ingredients-list">
+                <!-- Card layout pro obsah -->
+                <div class="recipe-cards">
+                    
+                    <!-- Příběh receptu -->
+                    <div class="recipe-card story-card">
+                        <div class="card-icon">📖</div>
+                        <h3 class="card-title">Příběh receptu</h3>
+                        <div class="card-content" id="modal-recipe-story">
+                        </div>
+                    </div>
+
+                    <!-- Suroviny -->
+                    <div class="recipe-card ingredients-card">
+                        <div class="card-icon">🥄</div>
+                        <h3 class="card-title">Suroviny</h3>
+                        <div class="card-content">
+                            <ul class="modern-ingredients-list" id="modal-ingredients-list">
                             </ul>
                         </div>
+                    </div>
 
-                        <div class="recipe-section">
-                            <h3>Postup</h3>
-                            <ol class="instructions-list" id="modal-instructions-list">
+                    <!-- Postup -->
+                    <div class="recipe-card instructions-card">
+                        <div class="card-icon">👩‍🍳</div>
+                        <h3 class="card-title">Postup přípravy</h3>
+                        <div class="card-content">
+                            <ol class="modern-instructions-list" id="modal-instructions-list">
                             </ol>
                         </div>
                     </div>
+
+                </div>
+
+                <!-- Akce -->
+                <div class="recipe-actions">
+                    <button onclick="printRecipe()" class="action-btn print-btn">
+                        📄 Vytisknout recept
+                    </button>
                 </div>
             </div>
         </div>
