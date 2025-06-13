@@ -62,7 +62,9 @@
             }
 
             try {
+                console.log('Načítám recept pro slug:', slug);
                 const recipe = await RecipeService.getRecipeBySlug(slug);
+                console.log('Načtený recept:', recipe);
                 
                 if (!recipe) {
                     document.getElementById('recipe-content').innerHTML = `
@@ -81,17 +83,37 @@
                 // Vytvoření HTML pro recept
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
                 
-                const ingredientsList = recipe.ingredients ? 
-                    recipe.ingredients.split('\n')
-                        .filter(ingredient => ingredient.trim())
-                        .map(ingredient => `<li>${ingredient.trim()}</li>`)
-                        .join('') : '';
+                // Bezpečné zpracování ingrediencí
+                let ingredientsList = '';
+                if (recipe.ingredients) {
+                    if (Array.isArray(recipe.ingredients)) {
+                        ingredientsList = recipe.ingredients
+                            .filter(ingredient => ingredient && ingredient.trim())
+                            .map(ingredient => `<li>${ingredient.trim()}</li>`)
+                            .join('');
+                    } else if (typeof recipe.ingredients === 'string') {
+                        ingredientsList = recipe.ingredients.split('\n')
+                            .filter(ingredient => ingredient.trim())
+                            .map(ingredient => `<li>${ingredient.trim()}</li>`)
+                            .join('');
+                    }
+                }
 
-                const instructionsList = recipe.instructions ? 
-                    recipe.instructions.split('\n')
-                        .filter(instruction => instruction.trim())
-                        .map(instruction => `<li>${instruction.trim()}</li>`)
-                        .join('') : '';
+                // Bezpečné zpracování instrukcí
+                let instructionsList = '';
+                if (recipe.instructions) {
+                    if (Array.isArray(recipe.instructions)) {
+                        instructionsList = recipe.instructions
+                            .filter(instruction => instruction && instruction.trim())
+                            .map(instruction => `<li>${instruction.trim()}</li>`)
+                            .join('');
+                    } else if (typeof recipe.instructions === 'string') {
+                        instructionsList = recipe.instructions.split('\n')
+                            .filter(instruction => instruction.trim())
+                            .map(instruction => `<li>${instruction.trim()}</li>`)
+                            .join('');
+                    }
+                }
 
                 const recipeHTML = `
                     <article class="recipe-detail">

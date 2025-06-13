@@ -52,7 +52,9 @@
         // Načtení všech receptů
         async function loadAllRecipes() {
             try {
+                console.log('Načítám všechny recepty...');
                 const recipes = await RecipeService.getAllRecipes();
+                console.log('Načtené recepty:', recipes);
                 const recipesGrid = document.getElementById('recipes-grid');
                 
                 if (!recipes || recipes.length === 0) {

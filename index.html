@@ -53,7 +53,10 @@
         // Jednoduchá verze bez routingu
         async function loadRandomRecipe() {
             try {
+                console.log('Načítám náhodný recept...');
                 const recipe = await RecipeService.getRandomRecipe();
+                console.log('Načtený recept:', recipe);
+                
                 if (!recipe) {
                     document.getElementById('recipe-of-day-content').innerHTML = `
                         <div class="no-recipes">
@@ -65,6 +68,7 @@
                 }
 
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
+                console.log('URL obrázku:', imageUrl);
                 
                 const html = \`
                     <article class="recipe-preview">
