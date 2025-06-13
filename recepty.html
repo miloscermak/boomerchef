@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepty - Boomerchef</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Boomerchef</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Domů</a></li>
+                <li><a href="recepty.html" class="nav-link active">Recepty</a></li>
+                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="recipes-section">
+            <h2 class="text-center">Naše sbírka receptů</h2>
+            <p class="text-center mb-lg" style="color: var(--medium-gray); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Každý recept má svůj příběh. Objevte tradiční chutě a vzpomínky, které se předávaly z generace na generaci.
+            </p>
+            
+            <div class="recipes-grid" id="recipes-grid">
+                <!-- Recepty se načtou dynamicky ze Supabase -->
+                <div class="text-center">
+                    <p>Načítám recepty...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal pro detail receptu -->
+        <div id="recipe-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeRecipe()">&times;</span>
+                <div class="recipe-container">
+                    <div class="recipe-image">
+                        <img id="modal-recipe-image" src="" alt="">
+                    </div>
+                    
+                    <div class="recipe-content">
+                        <h2 class="recipe-title" id="modal-recipe-title"></h2>
+                        
+                        <div class="recipe-story" id="modal-recipe-story">
+                        </div>
+
+                        <div class="recipe-section">
+                            <h3>Suroviny</h3>
+                            <ul class="ingredients-list" id="modal-ingredients-list">
+                            </ul>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h3>Postup</h3>
+                            <ol class="instructions-list" id="modal-instructions-list">
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Boomerchef - Recepty s příběhem</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

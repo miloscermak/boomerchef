@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boomerchef - Recepty s příběhem</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="nav-container">
+            <div class="logo">
+                <h1>Boomerchef</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">Domů</a></li>
+                <li><a href="recepty.html" class="nav-link">Recepty</a></li>
+                <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="recipe-of-day">
+            <div class="recipe-container">
+                <div class="recipe-image">
+                    <img src="images/gulasova-polevka.jpg" alt="Gulášová polévka" id="recipe-image">
+                </div>
+                
+                <div class="recipe-content">
+                    <h2 class="recipe-title" id="recipe-title">Gulášová polévka podle babičky Boženy</h2>
+                    
+                    <div class="recipe-story" id="recipe-story">
+                        <p>Tuto polévku vařila babička Božena každou neděli po návratu z kostela. Vůně se linula celým domem a všichni věděli, že je čas sednout si ke stolu. Recept předávala ústně, bez váhy, jen podle citu a zkušenosti. „Hrst tohoto, trochu tamtoho," říkávala s úsměvem.</p>
+                    </div>
+
+                    <div class="recipe-section">
+                        <h3>Suroviny</h3>
+                        <ul class="ingredients-list" id="ingredients-list">
+                            <li>500g hovězího masa na guláš</li>
+                            <li>2 velké cibule</li>
+                            <li>3 lžíce sádla nebo oleje</li>
+                            <li>2 lžíce sladké papriky</li>
+                            <li>1 lžíce rajčatového protlaku</li>
+                            <li>2 stroužky česneku</li>
+                            <li>1,5 l hovězího vývaru</li>
+                            <li>3 brambory</li>
+                            <li>Majoránka, sůl, pepř</li>
+                            <li>1 lžíce mouky</li>
+                        </ul>
+                    </div>
+
+                    <div class="recipe-section">
+                        <h3>Postup</h3>
+                        <ol class="instructions-list" id="instructions-list">
+                            <li>Maso nakrájíme na kostky, osolíme a opepříme.</li>
+                            <li>Na sádle zpěníme nakrájenou cibuli dozlatova.</li>
+                            <li>Přidáme maso a opečeme ze všech stran.</li>
+                            <li>Zasypeme paprikou, rychle promícháme a přidáme protlak.</li>
+                            <li>Zalijeme vývarem, přidáme majoránku a dusíme 1 hodinu.</li>
+                            <li>Přidáme nakrájené brambory a vaříme dalších 20 minut.</li>
+                            <li>Nakonec zahustíme moukou rozšlehanou v troše vody.</li>
+                            <li>Podáváme s čerstvým chlebem a kyselými okurkami.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 Boomerchef - Recepty s příběhem</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

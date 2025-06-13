@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrace - Boomerchef</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Přihlašovací formulář -->
+    <div id="login-section" class="auth-container">
+        <div class="auth-form">
+            <h2>Přihlášení do administrace</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Heslo:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Přihlásit se</button>
+            </form>
+            <div id="login-error" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Administrační rozhraní -->
+    <div id="admin-section" style="display: none;">
+        <header class="admin-header">
+            <div class="admin-nav">
+                <h1>Administrace Boomerchef</h1>
+                <div class="nav-actions">
+                    <a href="index.html" target="_blank" class="btn-secondary">Zobrazit web</a>
+                    <button id="logout-btn" class="btn-secondary">Odhlásit se</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="recipes">Recepty</button>
+                <button class="tab-btn" data-tab="add-recipe">Přidat recept</button>
+            </div>
+
+            <!-- Seznam receptů -->
+            <div id="recipes-tab" class="tab-content active">
+                <div class="recipes-header">
+                    <h2>Všechny recepty</h2>
+                    <button id="refresh-recipes" class="btn-secondary">Obnovit</button>
+                </div>
+                <div id="recipes-list" class="recipes-admin-list">
+                    <!-- Recepty se načtou dynamicky -->
+                </div>
+            </div>
+
+            <!-- Formulář pro přidání receptu -->
+            <div id="add-recipe-tab" class="tab-content">
+                <h2 id="form-title">Přidat nový recept</h2>
+                <form id="recipe-form" class="recipe-form">
+                    <input type="hidden" id="recipe-id" name="recipe-id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-title">Název receptu *</label>
+                            <input type="text" id="recipe-title" name="title" required maxlength="200">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipe-slug">URL slug</label>
+                            <input type="text" id="recipe-slug" name="slug" maxlength="200">
+                            <small>Automaticky se vygeneruje z názvu</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-story">Příběh receptu *</label>
+                        <textarea id="recipe-story" name="story" required rows="4" 
+                                  placeholder="Napište příběh nebo vzpomínku spojenou s tímto receptem..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-ingredients">Suroviny *</label>
+                        <textarea id="recipe-ingredients" name="ingredients" required rows="8"
+                                  placeholder="Každou surovinu napište na nový řádek&#10;Např:&#10;500g hovězího masa&#10;2 velké cibule&#10;3 lžíce oleje"></textarea>
+                        <small>Každou surovinu napište na nový řádek</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipe-instructions">Postup přípravy *</label>
+                        <textarea id="recipe-instructions" name="instructions" required rows="10"
+                                  placeholder="Každý krok napište na nový řádek&#10;Např:&#10;Maso nakrájíme na kostky&#10;Cibuli nakrájíme na půlkolečka&#10;Na oleji zpěníme cibuli"></textarea>
+                        <small>Každý krok napište na nový řádek</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-image">Obrázek receptu</label>
+                            <input type="file" id="recipe-image" name="image" accept="image/*">
+                            <small>Doporučené rozměry: 800x600px, max. 2MB</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipe-image-alt">Popis obrázku</label>
+                            <input type="text" id="recipe-image-alt" name="image_alt" maxlength="200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-category">Kategorie</label>
+                            <select id="recipe-category" name="category">
+                                <option value="hlavní jídlo">Hlavní jídlo</option>
+                                <option value="polévky">Polévky</option>
+                                <option value="předkrmy">Předkrmy</option>
+                                <option value="dezerty">Dezerty</option>
+                                <option value="pečivo">Pečivo</option>
+                                <option value="nápoje">Nápoje</option>
+                                <option value="ostatní">Ostatní</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipe-servings">Počet porcí</label>
+                            <input type="number" id="recipe-servings" name="servings" min="1" max="20" value="4">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="recipe-cooking-time">Čas přípravy (minuty)</label>
+                            <input type="number" id="recipe-cooking-time" name="cooking_time" min="5" max="600">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipe-difficulty">Obtížnost (1-5)</label>
+                            <select id="recipe-difficulty" name="difficulty_level">
+                                <option value="1">1 - Velmi snadné</option>
+                                <option value="2">2 - Snadné</option>
+                                <option value="3">3 - Střední</option>
+                                <option value="4">4 - Náročné</option>
+                                <option value="5">5 - Velmi náročné</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="recipe-published" name="is_published" checked>
+                                Publikovat recept
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="recipe-featured" name="featured">
+                                Doporučený recept
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Uložit recept</button>
+                        <button type="button" id="cancel-edit" class="btn-secondary" style="display: none;">Zrušit úpravy</button>
+                    </div>
+                </form>
+
+                <div id="form-success" class="success-message" style="display: none;"></div>
+                <div id="form-error" class="error-message" style="display: none;"></div>
+                <div id="upload-progress" class="progress-message" style="display: none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="admin-script.js"></script>
+</body>
+</html>
