@@ -46,8 +46,15 @@
         async function loadLatestRecipe() {
             try {
                 console.log('Načítám nejnovější recept...');
+                
+                // Zkusíme se připojit k Supabase
+                if (!window.supabase) {
+                    throw new Error('Supabase není dostupné');
+                }
+                
                 const recipes = await RecipeService.getAllRecipes();
                 console.log('Načtené recepty:', recipes);
+                console.log('Počet receptů:', recipes ? recipes.length : 0);
                 
                 if (!recipes || recipes.length === 0) {
                     document.getElementById('latest-recipe-content').innerHTML = `
@@ -61,8 +68,19 @@
 
                 // Nejnovější recept je první (recepty jsou řazené podle created_at DESC)
                 const recipe = recipes[0];
+                console.log('Vybranný recept:', recipe);
+                
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
                 console.log('URL obrázku:', imageUrl);
+                
+                // Bezpečné zpracování story
+                let storyText = '';
+                try {
+                    storyText = recipe.story ? Utils.formatStoryText(recipe.story, 300) : '';
+                } catch (e) {
+                    console.error('Chyba při formátování story:', e);
+                    storyText = recipe.story ? recipe.story.substring(0, 300) + '...' : '';
+                }
                 
                 const html = \`
                     <article class="recipe-preview">
@@ -72,7 +90,7 @@
                         <div class="recipe-preview-content">
                             <h3>\${recipe.title}</h3>
                             <div class="recipe-story-preview">
-                                \${Utils.formatStoryText(recipe.story, 300)}
+                                \${storyText}
                             </div>
                             <div class="recipe-actions">
                                 <a href="recept.html?slug=\${recipe.slug}" class="btn-primary">Zobrazit recept</a>
@@ -83,11 +101,15 @@
                 \`;
                 
                 document.getElementById('latest-recipe-content').innerHTML = html;
+                console.log('Recept úspěšně načten a zobrazen');
+                
             } catch (error) {
-                console.error('Chyba:', error);
+                console.error('Detailní chyba:', error);
                 document.getElementById('latest-recipe-content').innerHTML = `
                     <div class="error">
-                        <p>Chyba při načítání receptu. Zkontrolujte Supabase konfiguraci.</p>
+                        <p>Chyba při načítání receptu: \${error.message}</p>
+                        <p>Zkontrolujte konzoli pro více detailů.</p>
+                        <a href="admin.html" class="btn-primary">Spravovat recepty</a>
                     </div>
                 `;
             }
