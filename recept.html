@@ -154,44 +154,51 @@
                             </div>
                         </header>
 
-                        <div class="recipe-container">
-                            <div class="recipe-image">
-                                <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
-                            </div>
-                            
-                            <div class="recipe-content">
+                        <div class="recipe-two-column">
+                            <!-- Levý sloupec - článek -->
+                            <div class="recipe-article-column">
+                                <div class="recipe-image">
+                                    <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                                </div>
+                                
                                 ${recipe.story ? `
                                     <div class="recipe-story">
+                                        <h2>Příběh receptu</h2>
                                         ${Utils.formatStoryText(recipe.story)}
                                     </div>
                                 ` : ''}
 
-                                <div class="recipe-section">
-                                    <h3>Ingredience</h3>
-                                    <ul class="ingredients-list">
-                                        ${ingredientsList}
-                                    </ul>
-                                </div>
-
-                                <div class="recipe-section">
-                                    <h3>Postup přípravy</h3>
-                                    <ol class="instructions-list">
-                                        ${instructionsList}
-                                    </ol>
-                                </div>
-
                                 ${recipe.notes ? `
-                                    <div class="recipe-section">
+                                    <div class="recipe-notes-section">
                                         <h3>Poznámky</h3>
                                         <div class="recipe-notes">
                                             ${Utils.formatStoryText(recipe.notes)}
                                         </div>
                                     </div>
                                 ` : ''}
+                            </div>
 
-                                <div class="recipe-actions">
-                                    <button onclick="window.print()" class="btn-primary">Vytisknout recept</button>
-                                    <a href="recepty.html" class="btn-secondary">Zpět na recepty</a>
+                            <!-- Pravý sloupec - recept -->
+                            <div class="recipe-instructions-column">
+                                <div class="recipe-card">
+                                    <div class="recipe-section">
+                                        <h3>Ingredience</h3>
+                                        <ul class="ingredients-list">
+                                            ${ingredientsList}
+                                        </ul>
+                                    </div>
+
+                                    <div class="recipe-section">
+                                        <h3>Postup přípravy</h3>
+                                        <ol class="instructions-list">
+                                            ${instructionsList}
+                                        </ol>
+                                    </div>
+
+                                    <div class="recipe-actions">
+                                        <button onclick="window.print()" class="btn-primary">Vytisknout recept</button>
+                                        <a href="recepty.html" class="btn-secondary">Zpět na recepty</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -233,7 +240,7 @@
         }
 
         .recipe-detail {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -252,6 +259,51 @@
             color: var(--medium-gray);
             font-size: 0.9rem;
             margin-top: var(--spacing-md);
+        }
+
+        .recipe-two-column {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: var(--spacing-xxl);
+            margin-top: var(--spacing-xl);
+        }
+
+        .recipe-article-column {
+            /* Levý sloupec - článek */
+        }
+
+        .recipe-instructions-column {
+            /* Pravý sloupec - recept */
+        }
+
+        .recipe-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid var(--light-gray);
+            position: sticky;
+            top: var(--spacing-lg);
+        }
+
+        .recipe-story h2 {
+            font-family: var(--font-serif);
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .recipe-notes-section {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .recipe-notes-section h3 {
+            font-family: var(--font-serif);
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
         }
 
         .recipe-actions {
@@ -317,6 +369,16 @@
         }
 
         @media (max-width: 768px) {
+            .recipe-two-column {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+
+            .recipe-card {
+                position: static;
+                margin-top: var(--spacing-lg);
+            }
+
             .recipe-meta {
                 flex-direction: column;
                 gap: var(--spacing-xs);
