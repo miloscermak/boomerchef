@@ -83,36 +83,58 @@
                 // Vytvoření HTML pro recept
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
                 
-                // Bezpečné zpracování ingrediencí
+                // Ultraběžpečné zpracování ingrediencí - debug verze
+                console.log('Typ ingredients:', typeof recipe.ingredients);
+                console.log('Obsah ingredients:', recipe.ingredients);
+                
                 let ingredientsList = '';
-                if (recipe.ingredients) {
-                    if (Array.isArray(recipe.ingredients)) {
-                        ingredientsList = recipe.ingredients
-                            .filter(ingredient => ingredient && ingredient.trim())
-                            .map(ingredient => `<li>${ingredient.trim()}</li>`)
-                            .join('');
-                    } else if (typeof recipe.ingredients === 'string') {
-                        ingredientsList = recipe.ingredients.split('\n')
-                            .filter(ingredient => ingredient.trim())
-                            .map(ingredient => `<li>${ingredient.trim()}</li>`)
-                            .join('');
+                try {
+                    if (recipe.ingredients) {
+                        if (Array.isArray(recipe.ingredients)) {
+                            console.log('Ingredients je array');
+                            ingredientsList = recipe.ingredients
+                                .filter(ingredient => ingredient && String(ingredient).trim())
+                                .map(ingredient => `<li>${String(ingredient).trim()}</li>`)
+                                .join('');
+                        } else {
+                            console.log('Ingredients není array, konvertuji na string');
+                            const ingredientsStr = String(recipe.ingredients);
+                            ingredientsList = ingredientsStr.split('\n')
+                                .filter(ingredient => ingredient.trim())
+                                .map(ingredient => `<li>${ingredient.trim()}</li>`)
+                                .join('');
+                        }
                     }
+                } catch (e) {
+                    console.error('Chyba při zpracování ingredients:', e);
+                    ingredientsList = '<li>Chyba při načítání ingrediencí</li>';
                 }
 
-                // Bezpečné zpracování instrukcí
+                // Ultraběžpečné zpracování instrukcí - debug verze
+                console.log('Typ instructions:', typeof recipe.instructions);
+                console.log('Obsah instructions:', recipe.instructions);
+                
                 let instructionsList = '';
-                if (recipe.instructions) {
-                    if (Array.isArray(recipe.instructions)) {
-                        instructionsList = recipe.instructions
-                            .filter(instruction => instruction && instruction.trim())
-                            .map(instruction => `<li>${instruction.trim()}</li>`)
-                            .join('');
-                    } else if (typeof recipe.instructions === 'string') {
-                        instructionsList = recipe.instructions.split('\n')
-                            .filter(instruction => instruction.trim())
-                            .map(instruction => `<li>${instruction.trim()}</li>`)
-                            .join('');
+                try {
+                    if (recipe.instructions) {
+                        if (Array.isArray(recipe.instructions)) {
+                            console.log('Instructions je array');
+                            instructionsList = recipe.instructions
+                                .filter(instruction => instruction && String(instruction).trim())
+                                .map(instruction => `<li>${String(instruction).trim()}</li>`)
+                                .join('');
+                        } else {
+                            console.log('Instructions není array, konvertuji na string');
+                            const instructionsStr = String(recipe.instructions);
+                            instructionsList = instructionsStr.split('\n')
+                                .filter(instruction => instruction.trim())
+                                .map(instruction => `<li>${instruction.trim()}</li>`)
+                                .join('');
+                        }
                     }
+                } catch (e) {
+                    console.error('Chyba při zpracování instructions:', e);
+                    instructionsList = '<li>Chyba při načítání instrukcí</li>';
                 }
 
                 const recipeHTML = `
