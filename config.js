@@ -281,9 +281,9 @@ const Utils = {
             return `<p style="margin-bottom: 1.5rem;">${text.replace(/\n/g, '<br>')}</p>`;
         }
         
-        // Vytvoříme HTML odstavce s většími mezerami pro lepší čitelnost
+        // Vytvoříme HTML odstavce s výrazně většími mezerami
         return paragraphs
-            .map(paragraph => `<p style="margin-bottom: 2rem; line-height: 1.8; font-size: 1.1rem;">${paragraph.replace(/\n/g, '<br>')}</p>`)
+            .map(paragraph => `<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem;">${paragraph.replace(/\n/g, '<br>')}</p>`)
             .join('');
     }
 };
