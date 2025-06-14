@@ -82,23 +82,23 @@
                     storyText = recipe.story ? recipe.story.substring(0, 300) + '...' : '';
                 }
                 
-                const html = \`
+                const html = `
                     <article class="recipe-preview">
                         <div class="recipe-preview-image">
-                            <img src="\${imageUrl}" alt="\${recipe.image_alt || recipe.title}">
+                            <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
                         </div>
                         <div class="recipe-preview-content">
-                            <h3>\${recipe.title}</h3>
+                            <h3>${recipe.title}</h3>
                             <div class="recipe-story-preview">
-                                \${storyText}
+                                ${storyText}
                             </div>
                             <div class="recipe-actions">
-                                <a href="recept.html?slug=\${recipe.slug}" class="btn-primary">Zobrazit recept</a>
+                                <a href="recept.html?slug=${recipe.slug}" class="btn-primary">Zobrazit recept</a>
                                 <a href="recepty.html" class="btn-secondary">Všechny recepty</a>
                             </div>
                         </div>
                     </article>
-                \`;
+                `;
                 
                 document.getElementById('latest-recipe-content').innerHTML = html;
                 console.log('Recept úspěšně načten a zobrazen');
@@ -107,7 +107,7 @@
                 console.error('Detailní chyba:', error);
                 document.getElementById('latest-recipe-content').innerHTML = `
                     <div class="error">
-                        <p>Chyba při načítání receptu: \${error.message}</p>
+                        <p>Chyba při načítání receptu: ${error.message}</p>
                         <p>Zkontrolujte konzoli pro více detailů.</p>
                         <a href="admin.html" class="btn-primary">Spravovat recepty</a>
                     </div>
