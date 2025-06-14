@@ -24,18 +24,10 @@
     </header>
 
     <main class="main-content">
-        <section class="hero-section">
-            <div class="hero-content">
-                <h1>Recepty s příběhem</h1>
-                <p>Objevte tradiční chutě a vzpomínky, které se předávaly z generace na generaci</p>
-            </div>
-        </section>
-
-        <section class="recipe-of-day">
+        <section class="latest-recipe">
             <div class="container">
-                <h2 class="section-title">Recept dne</h2>
-                <div id="recipe-of-day-content">
-                    <div class="loading">Načítám recept dne...</div>
+                <div id="latest-recipe-content">
+                    <div class="loading">Načítám nejnovější recept...</div>
                 </div>
             </div>
         </section>
@@ -50,15 +42,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script>
-        // Jednoduchá verze bez routingu
-        async function loadRandomRecipe() {
+        // Načtení nejnovějšího receptu
+        async function loadLatestRecipe() {
             try {
-                console.log('Načítám náhodný recept...');
-                const recipe = await RecipeService.getRandomRecipe();
-                console.log('Načtený recept:', recipe);
+                console.log('Načítám nejnovější recept...');
+                const recipes = await RecipeService.getAllRecipes();
+                console.log('Načtené recepty:', recipes);
                 
-                if (!recipe) {
-                    document.getElementById('recipe-of-day-content').innerHTML = `
+                if (!recipes || recipes.length === 0) {
+                    document.getElementById('latest-recipe-content').innerHTML = `
                         <div class="no-recipes">
                             <p>Zatím zde nejsou žádné recepty.</p>
                             <a href="admin.html" class="btn-primary">Přidat první recept</a>
@@ -67,6 +59,8 @@
                     return;
                 }
 
+                // Nejnovější recept je první (recepty jsou řazené podle created_at DESC)
+                const recipe = recipes[0];
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
                 console.log('URL obrázku:', imageUrl);
                 
@@ -78,7 +72,7 @@
                         <div class="recipe-preview-content">
                             <h3>\${recipe.title}</h3>
                             <div class="recipe-story-preview">
-                                \${Utils.formatStoryText(recipe.story, 200)}
+                                \${Utils.formatStoryText(recipe.story, 300)}
                             </div>
                             <div class="recipe-actions">
                                 <a href="recept.html?slug=\${recipe.slug}" class="btn-primary">Zobrazit recept</a>
@@ -88,10 +82,10 @@
                     </article>
                 \`;
                 
-                document.getElementById('recipe-of-day-content').innerHTML = html;
+                document.getElementById('latest-recipe-content').innerHTML = html;
             } catch (error) {
                 console.error('Chyba:', error);
-                document.getElementById('recipe-of-day-content').innerHTML = `
+                document.getElementById('latest-recipe-content').innerHTML = `
                     <div class="error">
                         <p>Chyba při načítání receptu. Zkontrolujte Supabase konfiguraci.</p>
                     </div>
@@ -100,7 +94,7 @@
         }
 
         // Spustit při načtení
-        document.addEventListener('DOMContentLoaded', loadRandomRecipe);
+        document.addEventListener('DOMContentLoaded', loadLatestRecipe);
     </script>
 
     <style>
@@ -110,32 +104,8 @@
             padding: 0 var(--spacing-md);
         }
         
-        .hero-section {
-            background: linear-gradient(135deg, var(--cream) 0%, var(--light-gray) 100%);
-            padding: var(--spacing-xxl) 0;
-            text-align: center;
-        }
-        
-        .hero-content h1 {
-            font-family: var(--font-serif);
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .hero-content p {
-            font-size: 1.2rem;
-            color: var(--medium-gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            font-family: var(--font-serif);
-            font-size: 2rem;
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
+        .latest-recipe {
+            padding: var(--spacing-lg) 0;
         }
         
         .recipe-preview {
@@ -187,10 +157,6 @@
         }
         
         @media (max-width: 768px) {
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-            
             .recipe-preview {
                 grid-template-columns: 1fr;
             }
