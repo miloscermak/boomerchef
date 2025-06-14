@@ -2,6 +2,7 @@
 
 let currentEditingId = null;
 let allRecipes = [];
+let storyEditor = null;
 
 // DOM elementy
 const loginSection = document.getElementById('login-section');
@@ -64,6 +65,9 @@ function setupEventListeners() {
     document.getElementById('recipe-slug').addEventListener('input', function(e) {
         e.target.dataset.auto = 'false';
     });
+    
+    // Inicializace Quill editoru
+    initializeEditor();
     
     // Tabs
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -196,6 +200,10 @@ function editRecipe(id) {
     document.getElementById('recipe-title').value = recipe.title;
     document.getElementById('recipe-slug').value = recipe.slug;
     document.getElementById('recipe-story').value = recipe.story;
+    
+    // Načtení obsahu do Quill editoru
+    loadContentToEditor(recipe.story);
+    
     document.getElementById('recipe-ingredients').value = recipe.ingredients.join('\n');
     document.getElementById('recipe-instructions').value = recipe.instructions.join('\n');
     document.getElementById('recipe-image-alt').value = recipe.image_alt || '';
@@ -221,6 +229,10 @@ function cancelEdit() {
     document.getElementById('recipe-id').value = '';
     document.getElementById('form-title').textContent = 'Přidat nový recept';
     document.getElementById('cancel-edit').style.display = 'none';
+    
+    // Vyčištění editoru
+    clearEditor();
+    
     hideMessage('success');
     hideMessage('error');
 }
@@ -296,6 +308,7 @@ async function handleRecipeSubmit(e) {
             await RecipeService.createRecipe(recipeData);
             showMessage('success', 'Recept byl úspěšně vytvořen!');
             recipeForm.reset();
+            clearEditor();
         }
         
         hideMessage('progress');
@@ -321,5 +334,44 @@ function hideMessage(type) {
     const element = document.getElementById(`form-${type}`);
     if (element) {
         element.style.display = 'none';
+    }
+}
+
+// Inicializace Quill editoru
+function initializeEditor() {
+    const toolbarOptions = [
+        ['bold', 'italic'],
+        ['blockquote'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'header': [1, 2, 3, false] }],
+        ['clean']
+    ];
+
+    storyEditor = new Quill('#story-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Napište příběh nebo vzpomínku spojenou s tímto receptem...\n\nPro vytvoření nového odstavce stiskněte Enter dvakrát.'
+    });
+
+    // Synchronizace s hidden textarea
+    storyEditor.on('text-change', function() {
+        const html = storyEditor.root.innerHTML;
+        document.getElementById('recipe-story').value = html;
+    });
+}
+
+// Funkce pro načtení obsahu do editoru
+function loadContentToEditor(content) {
+    if (storyEditor && content) {
+        storyEditor.root.innerHTML = content;
+    }
+}
+
+// Funkce pro vyčištění editoru
+function clearEditor() {
+    if (storyEditor) {
+        storyEditor.setContents([]);
     }
 }

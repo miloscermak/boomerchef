@@ -261,7 +261,7 @@ const Utils = {
         return emailRegex.test(email);
     },
 
-    // Formátování příběhu s odstavci - debug verze
+    // Formátování příběhu s odstavci - podporuje HTML z editoru
     formatStoryText(story, maxLength = null) {
         if (!story) return '';
         
@@ -272,17 +272,26 @@ const Utils = {
             ? story.substring(0, maxLength) + '...' 
             : story;
         
+        // Pokud text už obsahuje HTML tagy (z Quill editoru), použijeme ho přímo
+        if (text.includes('<p>') || text.includes('<div>')) {
+            console.log('Text už obsahuje HTML, používám přímo');
+            // Jen přidáme lepší styling k existujícím paragrafům
+            const result = text.replace(/<p>/g, '<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem;">');
+            console.log('Výsledný HTML:', result);
+            return result;
+        }
+        
         console.log('Text po zkrácení:', text);
         
-        // Rozdělíme text na odstavce podle prázdných řádků NEBO jednoduchých \n
+        // Pro plain text - rozdělíme na odstavce
         const paragraphs = text
-            .split(/\n\s*\n|\r\n\s*\r\n|\n/) // Rozdělení podle prázdných řádků NEBO \n
+            .split(/\n\s*\n|\r\n\s*\r\n|\n/) 
             .map(p => p.trim())
             .filter(p => p.length > 0);
         
         console.log('Nalezené odstavce:', paragraphs);
         
-        // Vždy vytvoříme odstavce s mezerami, i když je jen jeden
+        // Vytvoříme odstavce s mezerami
         const result = paragraphs
             .map(paragraph => `<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem; display: block;">${paragraph.replace(/\n/g, '<br>')}</p>`)
             .join('');
