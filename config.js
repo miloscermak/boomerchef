@@ -261,29 +261,33 @@ const Utils = {
         return emailRegex.test(email);
     },
 
-    // Formátování příběhu s odstavci
+    // Formátování příběhu s odstavci - debug verze
     formatStoryText(story, maxLength = null) {
         if (!story) return '';
+        
+        console.log('Původní story text:', story);
         
         // Zkrátíme text pokud je zadán maxLength
         let text = maxLength && story.length > maxLength 
             ? story.substring(0, maxLength) + '...' 
             : story;
         
-        // Rozdělíme text na odstavce podle prázdných řádků
+        console.log('Text po zkrácení:', text);
+        
+        // Rozdělíme text na odstavce podle prázdných řádků NEBO jednoduchých \n
         const paragraphs = text
-            .split(/\n\s*\n|\r\n\s*\r\n/) // Rozdělení podle prázdných řádků
+            .split(/\n\s*\n|\r\n\s*\r\n|\n/) // Rozdělení podle prázdných řádků NEBO \n
             .map(p => p.trim())
             .filter(p => p.length > 0);
         
-        // Pokud nejsou nalezeny odstavce, celý text jako jeden odstavec
-        if (paragraphs.length <= 1) {
-            return `<p style="margin-bottom: 1.5rem;">${text.replace(/\n/g, '<br>')}</p>`;
-        }
+        console.log('Nalezené odstavce:', paragraphs);
         
-        // Vytvoříme HTML odstavce s výrazně většími mezerami
-        return paragraphs
-            .map(paragraph => `<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem;">${paragraph.replace(/\n/g, '<br>')}</p>`)
+        // Vždy vytvoříme odstavce s mezerami, i když je jen jeden
+        const result = paragraphs
+            .map(paragraph => `<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem; display: block;">${paragraph.replace(/\n/g, '<br>')}</p>`)
             .join('');
+            
+        console.log('Výsledný HTML:', result);
+        return result;
     }
 };
