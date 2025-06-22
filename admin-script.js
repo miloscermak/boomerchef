@@ -3,6 +3,7 @@
 let currentEditingId = null;
 let allRecipes = [];
 let storyEditor = null;
+let aboutEditor = null;
 
 // DOM elementy
 const loginSection = document.getElementById('login-section');
@@ -81,6 +82,15 @@ function setupEventListeners() {
     
     // Zrušení úprav
     document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
+    
+    // About page form
+    const aboutForm = document.getElementById('about-form');
+    if (aboutForm) {
+        aboutForm.addEventListener('submit', handleAboutSubmit);
+    }
+    
+    // Preview button
+    document.getElementById('preview-about').addEventListener('click', previewAbout);
 }
 
 // Přihlášení
@@ -129,6 +139,8 @@ function switchTab(tabName) {
     // Pokud přepínáme na recepty, načteme je
     if (tabName === 'recipes') {
         loadRecipes();
+    } else if (tabName === 'about-page') {
+        loadAboutContent();
     }
 }
 
@@ -360,6 +372,30 @@ function initializeEditor() {
         const html = storyEditor.root.innerHTML;
         document.getElementById('recipe-story').value = html;
     });
+    
+    // Initialize about page editor
+    const aboutEditorOptions = [
+        ['bold', 'italic', 'underline'],
+        ['blockquote'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'header': [1, 2, 3, false] }],
+        ['link'],
+        ['clean']
+    ];
+    
+    aboutEditor = new Quill('#about-editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: aboutEditorOptions
+        },
+        placeholder: 'Napište obsah stránky O projektu...'
+    });
+    
+    // Synchronizace s hidden textarea pro about editor
+    aboutEditor.on('text-change', function() {
+        const html = aboutEditor.root.innerHTML;
+        document.getElementById('about-content').value = html;
+    });
 }
 
 // Funkce pro načtení obsahu do editoru
@@ -373,5 +409,98 @@ function loadContentToEditor(content) {
 function clearEditor() {
     if (storyEditor) {
         storyEditor.setContents([]);
+    }
+}
+
+// About page functions
+async function loadAboutContent() {
+    try {
+        showAboutMessage('loading', 'Načítám obsah stránky...');
+        
+        const { data, error } = await supabaseClient
+            .from('about_page')
+            .select('*')
+            .single();
+        
+        hideAboutMessage('loading');
+        
+        if (error) {
+            if (error.code === 'PGRST116') {
+                // No data found, use default content
+                const defaultContent = '<p>Boomerchef je osobní projekt Miloše Čermáka, který vznikl v rámci iniciativy Inspiruj.se. Jeho cílem je ukázat, jak může generativní umělá inteligence měnit svět žurnalistiky, tvorby obsahu – a třeba i receptů.</p>';
+                aboutEditor.root.innerHTML = defaultContent;
+                document.getElementById('about-content').value = defaultContent;
+                return;
+            }
+            throw error;
+        }
+        
+        // Load content into form
+        document.getElementById('about-title').value = data.title;
+        aboutEditor.root.innerHTML = data.content;
+        document.getElementById('about-content').value = data.content;
+        
+    } catch (error) {
+        hideAboutMessage('loading');
+        console.error('Chyba při načítání obsahu:', error);
+        showAboutMessage('error', 'Chyba při načítání obsahu: ' + error.message);
+    }
+}
+
+async function handleAboutSubmit(e) {
+    e.preventDefault();
+    
+    try {
+        showAboutMessage('loading', 'Ukládám změny...');
+        hideAboutMessage('success');
+        hideAboutMessage('error');
+        
+        const title = document.getElementById('about-title').value.trim();
+        const content = document.getElementById('about-content').value.trim();
+        
+        if (!title || !content) {
+            throw new Error('Název a obsah jsou povinné');
+        }
+        
+        // Upsert data (insert or update)
+        const { error } = await supabaseClient
+            .from('about_page')
+            .upsert({
+                id: 1, // Always use ID 1 for single about page
+                title: title,
+                content: content
+            }, {
+                onConflict: 'id'
+            });
+        
+        if (error) throw error;
+        
+        hideAboutMessage('loading');
+        showAboutMessage('success', 'Obsah stránky byl úspěšně uložen!');
+        
+    } catch (error) {
+        hideAboutMessage('loading');
+        console.error('Chyba při ukládání obsahu:', error);
+        showAboutMessage('error', 'Chyba při ukládání: ' + error.message);
+    }
+}
+
+function previewAbout() {
+    window.open('o-projektu.html', '_blank');
+}
+
+// About page message functions
+function showAboutMessage(type, message) {
+    const element = document.getElementById(`about-${type}`);
+    if (element) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+}
+
+function hideAboutMessage(type) {
+    const element = document.getElementById(`about-${type}`);
+    if (element) {
+        element.style.display = 'none';
     }
 }

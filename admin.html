@@ -47,6 +47,7 @@
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="recipes">Recepty</button>
                 <button class="tab-btn" data-tab="add-recipe">Přidat recept</button>
+                <button class="tab-btn" data-tab="about-page">O projektu</button>
             </div>
 
             <!-- Seznam receptů -->
@@ -171,6 +172,33 @@
                 <div id="form-success" class="success-message" style="display: none;"></div>
                 <div id="form-error" class="error-message" style="display: none;"></div>
                 <div id="upload-progress" class="progress-message" style="display: none;"></div>
+            </div>
+
+            <!-- Editace stránky O projektu -->
+            <div id="about-page-tab" class="tab-content">
+                <h2>Editace stránky "O projektu"</h2>
+                <form id="about-form" class="recipe-form">
+                    <div class="form-group">
+                        <label for="about-title">Název stránky *</label>
+                        <input type="text" id="about-title" name="title" required maxlength="200" value="O projektu Boomerchef">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="about-content">Obsah stránky *</label>
+                        <div id="about-editor" class="quill-editor"></div>
+                        <textarea id="about-content" name="content" required style="display: none;"></textarea>
+                        <small>Použijte editor pro formátování textu, přidávání odkazů a obrázků.</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Uložit změny</button>
+                        <button type="button" id="preview-about" class="btn-secondary">Náhled</button>
+                    </div>
+                </form>
+
+                <div id="about-success" class="success-message" style="display: none;"></div>
+                <div id="about-error" class="error-message" style="display: none;"></div>
+                <div id="about-loading" class="progress-message" style="display: none;"></div>
             </div>
         </main>
     </div>
