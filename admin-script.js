@@ -182,7 +182,7 @@ function renderRecipesList(recipes) {
     
     recipesList.innerHTML = recipes.map(recipe => `
         <div class="recipe-admin-item">
-            <img src="${recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.jpg'}" 
+            <img src="${recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg'}"
                  alt="${recipe.image_alt || recipe.title}">
             <div class="recipe-admin-info">
                 <h3>${recipe.title}</h3>
@@ -196,11 +196,27 @@ function renderRecipesList(recipes) {
                 </div>
             </div>
             <div class="recipe-admin-actions">
+                <button class="btn-primary btn-small" onclick="togglePublish('${recipe.id}')">${recipe.is_published ? 'Skrýt' : 'Publikovat'}</button>
                 <button class="btn-secondary btn-small" onclick="editRecipe('${recipe.id}')">Upravit</button>
                 <button class="btn-danger btn-small" onclick="deleteRecipe('${recipe.id}', '${recipe.title}')">Smazat</button>
             </div>
         </div>
     `).join('');
+}
+
+// Rychlé publikování / skrytí receptu přímo ze seznamu
+async function togglePublish(id) {
+    const recipe = allRecipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    const newState = !recipe.is_published;
+    try {
+        await RecipeService.updateRecipe(id, { is_published: newState });
+        await loadRecipes();
+    } catch (error) {
+        console.error('Chyba při změně publikace:', error);
+        alert('Nepodařilo se změnit stav publikace: ' + error.message);
+    }
 }
 
 // Úprava receptu
