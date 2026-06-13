@@ -25,7 +25,7 @@ const PROMPT_TOOL = {
   input_schema: {
     type: 'object',
     properties: {
-      image_prompt: { type: 'string', description: 'Anglický prompt: fotorealistická, chutně nasvícená fotka hotového pokrmu na talíři, rustikální/nostalgická atmosféra, přírodní světlo, žádný text v obrázku.' },
+      image_prompt: { type: 'string', description: 'ANGLICKÝ prompt pro ilustraci. Styl VŽDY: klasická francouzská kuchařská ilustrace – barevná kresba, černý inkoustový obrys a pastelové výplně, elegantní, horizontální kompozice (na šířku). Hotový pokrm na talíři/servírovací nádobě, vhodné detaily (příbory, ubrousek, decentní dekorace). Žádný text ani písmena. Zakomponuj hlavní ingredience a finální vzhled pokrmu.' },
       image_alt: { type: 'string', description: 'Krátký český alt text obrázku, 1 věta.' }
     },
     required: ['image_prompt', 'image_alt']
@@ -76,7 +76,7 @@ async function buildImagePrompt(recipe) {
     tool_choice: { type: 'tool', name: PROMPT_TOOL.name },
     messages: [{
       role: 'user',
-      content: `Napiš prompt pro fotku hotového pokrmu k tomuto receptu.\n\nNázev: ${recipe.title}\n\nKontext (úryvek příběhu): ${storySnippet}`
+      content: `Napiš anglický prompt pro ILUSTRACI hotového pokrmu k tomuto receptu, ve stylu klasické francouzské kuchařské ilustrace (barevná kresba, černý inkoustový obrys + pastelové výplně, horizontální kompozice). Zaměř se na hlavní ingredience a finální vzhled pokrmu na talíři.\n\nNázev: ${recipe.title}\n\nKontext (úryvek příběhu): ${storySnippet}`
     }]
   };
   const apiKey = envOrError('ANTHROPIC_API_KEY');

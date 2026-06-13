@@ -52,7 +52,7 @@ POSTUP (pole instructions): pole stringů, každý jeden krok. NEpřidávej čí
 
 Dále odhadni metadata: title (název jídla), category (jedna z: hlavní jídlo, polévky, předkrmy, dezerty, pečivo, nápoje, ostatní), cooking_time (minuty), servings (porce), difficulty_level (1–5).
 
-OBRÁZEK: image_prompt je ANGLICKÝ prompt pro generátor obrázků – fotorealistická, chutně nasvícená fotka hotového pokrmu na talíři, rustikální/nostalgická atmosféra, přírodní světlo, žádný text v obrázku. image_alt je krátký český popis obrázku (1 věta).
+OBRÁZEK: image_prompt je ANGLICKÝ prompt pro generátor obrázků. Styl musí být VŽDY: klasická francouzská kuchařská ilustrace – barevná kresba, černý inkoustový obrys a pastelové výplně, elegantní, horizontální kompozice (na šířku). Zobraz hotový pokrm na talíři nebo v servírovací nádobě, doplň vhodné detaily (příbory, ubrousek, decentní dekorace) pro atmosféru. Žádný text ani písmena v obrázku. Do promptu zakomponuj hlavní ingredience a finální vzhled konkrétního pokrmu. image_alt je krátký český popis obrázku (1 věta).
 
 UKÁZKA HLASU (takto má znít story_html, jen místo holého textu vrať odstavce v <p>):
 Je to jeden z nejoblíbenějších českých gastronomických omylů. A ochotně napravovaných, těmi znalými. Totiž že segedínský guláš nevznikl v maďarském městě Szegedu, a dokonce s ním ani nemá nic společného. Ale v Maďarsku vznikl, podle legendy v roce 1846, a proslavil ho básník Sándor Petőfi. Jeden z nejznámějších maďarských literátů (se slovenskými kořeny) ho však taky nevymyslel. To se připisuje jeho méně známému kolegovi Jozsefu Székelymu. A jako mnoho jiných jídel vzniklo i toto vlastně omylem. Třiadvacetiletý Petőfi a o dva roky mladší Székely se sešli v restauraci Komló Kert v Pešti. Bylo déle po poledni a hostinský už neměl žádné z původně připravených jídel. V kuchyni bylo jen vařené kysané zelí a zbytek vepřového guláše. „Smíchejte to a servírujte!", prohlásil Székely - věta pro segedínský guláš významem srovnatelná s Galileovou „A přece se točí!" pro astronomii. Z původní nouzovky se stal regulérní pokrm.`;
@@ -71,7 +71,7 @@ const RECIPE_TOOL = {
       cooking_time: { type: 'integer', description: 'Čas přípravy v minutách.' },
       servings: { type: 'integer', description: 'Počet porcí.' },
       difficulty_level: { type: 'integer', description: 'Obtížnost 1–5.' },
-      image_prompt: { type: 'string', description: 'Anglický prompt pro generátor obrázku hotového pokrmu.' },
+      image_prompt: { type: 'string', description: 'Anglický prompt pro ilustraci hotového pokrmu ve stylu klasické francouzské kuchařské ilustrace (barevná kresba, černý inkoustový obrys + pastelové výplně, horizontální). Viz system prompt.' },
       image_alt: { type: 'string', description: 'Krátký český alt text obrázku, 1 věta.' }
     },
     required: ['title', 'story_html', 'ingredients', 'instructions', 'image_prompt', 'image_alt']
