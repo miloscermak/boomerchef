@@ -29,6 +29,13 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - `test-formatting.html` – testovací stránka pro formátování odstavců.
 - `create-admin.sql`, `create-about-table.sql`, `simple-schema.sql` – starší/pomocná SQL.
 
+## AI generování receptů (Netlify funkce)
+
+- V adminu je záložka **🤖 Generovat z AI** – vložíš surový recept, Netlify background funkce `netlify/functions/generate-recipe-background.js` zavolá Claude (Opus 4.8, Tool Use → strukturovaný JSON) a volitelně xAI Grok na obrázek, uloží recept jako **koncept** (`is_published=false`). Editor zkontroluje a publikuje.
+- Klient (`admin-script.js`, `handleAiGenerate`) volá funkci s Bearer Supabase tokenem, pak pollne DB na nový koncept a otevře ho v editaci.
+- Tajné klíče (Anthropic, xAI, Supabase service role) jsou **jen v Netlify env**, nikdy v repu. Kompletní návod: `AI-PIPELINE.md`.
+- Hosting: web se přesouvá z Vercelu na **Netlify** (kvůli funkcím), `netlify.toml` + `package.json` jsou v repu.
+
 ## Supabase
 
 - **URL a anon key** jsou v `config.js` (commitnuté – anon key je veřejný, OK; service role key tam **nikdy** nesmí být).

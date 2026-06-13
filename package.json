@@ -1,0 +1,9 @@
+{
+  "name": "boomerchef",
+  "version": "1.0.0",
+  "description": "Web s tradičními recepty a nostalgickými příběhy. Statický frontend + Netlify funkce pro AI generování receptů.",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev"
+  }
+}

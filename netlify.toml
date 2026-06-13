@@ -1,0 +1,10 @@
+# Netlify konfigurace pro BoomerChef
+# Web je statický (HTML/CSS/JS), publikuje se root složka.
+# Serverless funkce (generování receptů přes AI) žijí v netlify/functions.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"

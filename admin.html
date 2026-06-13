@@ -46,6 +46,7 @@
         <main class="admin-main">
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="recipes">Recepty</button>
+                <button class="tab-btn" data-tab="ai-generate">🤖 Generovat z AI</button>
                 <button class="tab-btn" data-tab="add-recipe">Přidat recept</button>
                 <button class="tab-btn" data-tab="about-page">O projektu</button>
             </div>
@@ -59,6 +60,35 @@
                 <div id="recipes-list" class="recipes-admin-list">
                     <!-- Recepty se načtou dynamicky -->
                 </div>
+            </div>
+
+            <!-- Generování receptu z AI -->
+            <div id="ai-generate-tab" class="tab-content">
+                <h2>Vygenerovat recept přes AI</h2>
+                <p class="ai-hint">Vlož surový recept (suroviny + postup, klidně rozsypaně). Claude (Opus&nbsp;4.8) z něj napíše příběh, standardizuje suroviny a postup a&nbsp;volitelně vygeneruje obrázek. Hotový recept se objeví jako <strong>koncept</strong>, který si zkontroluješ a&nbsp;teprve pak publikuješ.</p>
+
+                <form id="ai-form" class="recipe-form">
+                    <div class="form-group">
+                        <label for="ai-recipe-text">Surový recept *</label>
+                        <textarea id="ai-recipe-text" name="recipe_text" required rows="16"
+                                  placeholder="Sem vlož recept – suroviny i postup. Nemusí být učesaný, klidně zkopírovaný odkudkoliv."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ai-generate-image" name="generate_image" checked>
+                            Vygenerovat i ilustrační obrázek (Grok)
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="ai-generate-btn">Vygenerovat recept</button>
+                    </div>
+                </form>
+
+                <div id="ai-progress" class="progress-message" style="display: none;"></div>
+                <div id="ai-success" class="success-message" style="display: none;"></div>
+                <div id="ai-error" class="error-message" style="display: none;"></div>
             </div>
 
             <!-- Formulář pro přidání receptu -->

@@ -91,6 +91,12 @@ function setupEventListeners() {
     
     // Preview button
     document.getElementById('preview-about').addEventListener('click', previewAbout);
+
+    // AI generování receptu
+    const aiForm = document.getElementById('ai-form');
+    if (aiForm) {
+        aiForm.addEventListener('submit', handleAiGenerate);
+    }
 }
 
 // Přihlášení
@@ -503,4 +509,107 @@ function hideAboutMessage(type) {
     if (element) {
         element.style.display = 'none';
     }
+}
+
+// ===== AI generování receptu =====
+
+// Endpoint Netlify background funkce (na produkci je dostupný na vlastní doméně)
+const AI_FUNCTION_URL = '/.netlify/functions/generate-recipe-background';
+
+function showAiMessage(type, message) {
+    const el = document.getElementById(`ai-${type}`);
+    if (el) { el.innerHTML = message; el.style.display = 'block'; }
+}
+function hideAiMessage(type) {
+    const el = document.getElementById(`ai-${type}`);
+    if (el) { el.style.display = 'none'; }
+}
+
+async function handleAiGenerate(e) {
+    e.preventDefault();
+
+    const recipeText = document.getElementById('ai-recipe-text').value.trim();
+    const generateImage = document.getElementById('ai-generate-image').checked;
+    const btn = document.getElementById('ai-generate-btn');
+
+    if (!recipeText) {
+        showAiMessage('error', 'Vlož prosím text receptu.');
+        return;
+    }
+
+    hideAiMessage('error');
+    hideAiMessage('success');
+
+    try {
+        // Session token kvůli ověření na straně funkce
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            showAiMessage('error', 'Nejsi přihlášený. Přihlas se prosím znovu.');
+            return;
+        }
+
+        // Zapamatujeme si stávající ID receptů, abychom poznali nově vzniklý koncept
+        const knownIds = new Set(allRecipes.map(r => r.id));
+
+        btn.disabled = true;
+        showAiMessage('progress', '⏳ Generuji recept přes Claude… Může to trvat 1–2 minuty. Nech okno otevřené.');
+
+        const response = await fetch(AI_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ recipe_text: recipeText, generate_image: generateImage })
+        });
+
+        // Background funkce vrací 202 (přijato). Cokoliv 4xx je rovnou chyba.
+        if (response.status >= 400) {
+            const txt = await response.text();
+            throw new Error(`Funkce vrátila ${response.status}: ${txt}`);
+        }
+
+        // Pollujeme databázi, dokud se nový koncept neobjeví (max ~4 minuty)
+        const newRecipe = await pollForNewDraft(knownIds, 48, 5000);
+
+        hideAiMessage('progress');
+        btn.disabled = false;
+
+        if (newRecipe) {
+            showAiMessage('success', `✅ Recept „${newRecipe.title}" je hotový a otevřený k úpravě. Zkontroluj ho a zaškrtni „Publikovat".`);
+            document.getElementById('ai-form').reset();
+            // Otevřeme nový koncept rovnou v editačním formuláři
+            await loadRecipes();
+            editRecipe(newRecipe.id);
+        } else {
+            showAiMessage('error', 'Recept se zatím neobjevil. Zkus za chvíli kliknout na záložku „Recepty" a obnovit – možná generování ještě běží, nebo nastala chyba (zkontroluj Netlify → Functions → Logs).');
+        }
+    } catch (error) {
+        hideAiMessage('progress');
+        btn.disabled = false;
+        console.error('Chyba AI generování:', error);
+        showAiMessage('error', 'Chyba při generování: ' + error.message);
+    }
+}
+
+// Opakovaně se ptá DB na nově vzniklý nepublikovaný recept (koncept).
+async function pollForNewDraft(knownIds, attempts, intervalMs) {
+    for (let i = 0; i < attempts; i++) {
+        await new Promise(r => setTimeout(r, intervalMs));
+        try {
+            const { data, error } = await supabaseClient
+                .from('recipes')
+                .select('*')
+                .eq('is_published', false)
+                .order('created_at', { ascending: false })
+                .limit(10);
+            if (!error && data) {
+                const fresh = data.find(r => !knownIds.has(r.id));
+                if (fresh) return fresh;
+            }
+        } catch (e) {
+            // tichý retry
+        }
+    }
+    return null;
 }
