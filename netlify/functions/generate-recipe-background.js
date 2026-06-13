@@ -21,10 +21,7 @@
 //   SUPABASE_SERVICE_ROLE  – service role klíč (zápis do recipes přes RLS)
 //   SUPABASE_ANON_KEY      – anon klíč (jen na ověření tokenu uživatele)
 
-const fetch = (() => {
-  try { return require('node-fetch'); }
-  catch (e) { return globalThis.fetch; }
-})();
+// Node 18+ (Netlify) má fetch globálně, žádná závislost není potřeba.
 
 const ANTHROPIC_VERSION = '2023-06-01';
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8';
