@@ -44,6 +44,8 @@ AUTORSKÝ HLAS (pole story_html):
 - Délka 700–900 slov. Humorně, zábavně, s konkrétními historkami, jmény, letopočty a překvapivými fakty. Bez klišé a superlativů.
 - Formát: čisté HTML odstavce. Povolené tagy POUZE: <p>, <strong>, <em>. Žádné nadpisy, seznamy, <br>, <div>. Každý odstavec obal do <p>...</p>.
 
+INTERPUNKCE (platí pro VŠECHNA textová pole): NIKDY nepoužívej dlouhou pomlčku „—" (em dash) ani střední pomlčku „–" (en dash). Vždy místo nich použij obyčejnou spojovací pomlčku „-".
+
 INGREDIENCE (pole ingredients): pole stringů, každý jedna surovina s množstvím. Pevné suroviny převeď na gramy (g), tekuté na mililitry (ml). Pokud recept neuvádí přesné množství, udělej rozumný odhad. Bez čísla na začátku, např. "vepřová plec (1000 g)".
 
 POSTUP (pole instructions): pole stringů, každý jeden krok. NEpřidávej čísla na začátek (číslování dělá web sám). Kroky jasné a srozumitelné, se všemi detaily.
@@ -53,7 +55,7 @@ Dále odhadni metadata: title (název jídla), category (jedna z: hlavní jídlo
 OBRÁZEK: image_prompt je ANGLICKÝ prompt pro generátor obrázků – fotorealistická, chutně nasvícená fotka hotového pokrmu na talíři, rustikální/nostalgická atmosféra, přírodní světlo, žádný text v obrázku. image_alt je krátký český popis obrázku (1 věta).
 
 UKÁZKA HLASU (takto má znít story_html, jen místo holého textu vrať odstavce v <p>):
-Je to jeden z nejoblíbenějších českých gastronomických omylů. A ochotně napravovaných, těmi znalými. Totiž že segedínský guláš nevznikl v maďarském městě Szegedu, a dokonce s ním ani nemá nic společného. Ale v Maďarsku vznikl, podle legendy v roce 1846, a proslavil ho básník Sándor Petőfi. Jeden z nejznámějších maďarských literátů (se slovenskými kořeny) ho však taky nevymyslel. To se připisuje jeho méně známému kolegovi Jozsefu Székelymu. A jako mnoho jiných jídel vzniklo i toto vlastně omylem. Třiadvacetiletý Petőfi a o dva roky mladší Székely se sešli v restauraci Komló Kert v Pešti. Bylo déle po poledni a hostinský už neměl žádné z původně připravených jídel. V kuchyni bylo jen vařené kysané zelí a zbytek vepřového guláše. „Smíchejte to a servírujte!", prohlásil Székely – věta pro segedínský guláš významem srovnatelná s Galileovou „A přece se točí!" pro astronomii. Z původní nouzovky se stal regulérní pokrm.`;
+Je to jeden z nejoblíbenějších českých gastronomických omylů. A ochotně napravovaných, těmi znalými. Totiž že segedínský guláš nevznikl v maďarském městě Szegedu, a dokonce s ním ani nemá nic společného. Ale v Maďarsku vznikl, podle legendy v roce 1846, a proslavil ho básník Sándor Petőfi. Jeden z nejznámějších maďarských literátů (se slovenskými kořeny) ho však taky nevymyslel. To se připisuje jeho méně známému kolegovi Jozsefu Székelymu. A jako mnoho jiných jídel vzniklo i toto vlastně omylem. Třiadvacetiletý Petőfi a o dva roky mladší Székely se sešli v restauraci Komló Kert v Pešti. Bylo déle po poledni a hostinský už neměl žádné z původně připravených jídel. V kuchyni bylo jen vařené kysané zelí a zbytek vepřového guláše. „Smíchejte to a servírujte!", prohlásil Székely - věta pro segedínský guláš významem srovnatelná s Galileovou „A přece se točí!" pro astronomii. Z původní nouzovky se stal regulérní pokrm.`;
 
 const RECIPE_TOOL = {
   name: 'save_recipe',
