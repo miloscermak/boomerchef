@@ -25,7 +25,7 @@
 
 const ANTHROPIC_VERSION = '2023-06-01';
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8';
-const XAI_IMAGE_MODEL = process.env.XAI_IMAGE_MODEL || 'grok-imagine-image';
+const XAI_IMAGE_MODEL = process.env.XAI_IMAGE_MODEL || 'grok-imagine-image-quality';
 const BUCKET = 'recipe-images';
 
 // Kategorie musí odpovídat <select> v admin.html
