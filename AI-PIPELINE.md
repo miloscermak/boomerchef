@@ -68,7 +68,7 @@ Netlify → Site → **Site settings → Environment variables** přidej:
 | `SUPABASE_SERVICE_ROLE` | `eyJ…` (service_role) | zápis konceptu (bypass RLS) |
 | `SUPABASE_ANON_KEY` | `eyJ…` (anon) | ověření přihlášeného admina |
 | `ANTHROPIC_MODEL` | `claude-opus-4-8` *(volitelné)* | model pro text |
-| `XAI_IMAGE_MODEL` | `grok-imagine-image` *(volitelné)* | model pro obrázek |
+| `XAI_IMAGE_MODEL` | `grok-imagine-image-quality` *(volitelné)* | model pro obrázek |
 
 Po uložení spusť **Deploys → Trigger deploy → Deploy site**.
 
@@ -94,7 +94,7 @@ Koncepty (nepublikované recepty) vidíš i v záložce **Recepty** se štítkem
 - **„Chybí env proměnná …" v logu:** nezapomněl jsi přidat všech 5 povinných proměnných a redeploy?
 - **Anthropic 401:** špatný `ANTHROPIC_API_KEY`.
 - **Anthropic 400 (overloaded):** zkus dočasně `ANTHROPIC_MODEL=claude-sonnet-4-6`.
-- **Obrázek chybí, text je OK:** zkontroluj `XAI_API_KEY` a model `grok-imagine-image`
+- **Obrázek chybí, text je OK:** zkontroluj `XAI_API_KEY` a model `grok-imagine-image-quality`
   (název modelu se může u xAI časem změnit – nastav `XAI_IMAGE_MODEL`). Text se uloží
   i bez obrázku, obrázek pak dodáš ručně v editaci.
 - **Supabase insert 401/403:** použil jsi anon místo `service_role`? RLS write potřebuje service role.
