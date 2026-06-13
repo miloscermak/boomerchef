@@ -197,6 +197,7 @@ function renderRecipesList(recipes) {
             </div>
             <div class="recipe-admin-actions">
                 <button class="btn-primary btn-small" onclick="togglePublish('${recipe.id}')">${recipe.is_published ? 'Skrýt' : 'Publikovat'}</button>
+                <button class="btn-secondary btn-small" onclick="generateRecipeImage('${recipe.id}', this)">${recipe.image_url ? 'Nový obrázek' : 'Vygenerovat obrázek'}</button>
                 <button class="btn-secondary btn-small" onclick="editRecipe('${recipe.id}')">Upravit</button>
                 <button class="btn-danger btn-small" onclick="deleteRecipe('${recipe.id}', '${recipe.title}')">Smazat</button>
             </div>
@@ -217,6 +218,75 @@ async function togglePublish(id) {
         console.error('Chyba při změně publikace:', error);
         alert('Nepodařilo se změnit stav publikace: ' + error.message);
     }
+}
+
+// Dogenerování / přegenerování obrázku u existujícího receptu
+const AI_IMAGE_FUNCTION_URL = '/.netlify/functions/generate-image-background';
+
+async function generateRecipeImage(id, btn) {
+    const recipe = allRecipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    if (recipe.image_url && !confirm(`Přegenerovat obrázek u receptu „${recipe.title}"? Stávající obrázek se nahradí novým.`)) {
+        return;
+    }
+
+    const originalImage = recipe.image_url || null;
+    const originalLabel = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Generuji…'; }
+
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            alert('Nejsi přihlášený. Přihlas se prosím znovu.');
+            if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+            return;
+        }
+
+        const response = await fetch(AI_IMAGE_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ recipe_id: id })
+        });
+        if (response.status >= 400) {
+            throw new Error(`Funkce vrátila ${response.status}: ${await response.text()}`);
+        }
+
+        // Počkáme, dokud se image_url u receptu nezmění (max ~3 minuty)
+        const newImage = await pollForImageChange(id, originalImage, 36, 5000);
+        if (newImage) {
+            await loadRecipes();
+        } else {
+            if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+            alert('Obrázek se zatím neobjevil. Generování možná ještě běží, nebo nastala chyba (Netlify → Functions → generate-image-background → Logs).');
+        }
+    } catch (error) {
+        console.error('Chyba generování obrázku:', error);
+        if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+        alert('Nepodařilo se vygenerovat obrázek: ' + error.message);
+    }
+}
+
+async function pollForImageChange(id, originalImage, attempts, intervalMs) {
+    for (let i = 0; i < attempts; i++) {
+        await new Promise(r => setTimeout(r, intervalMs));
+        try {
+            const { data, error } = await supabaseClient
+                .from('recipes')
+                .select('image_url')
+                .eq('id', id)
+                .single();
+            if (!error && data && data.image_url && data.image_url !== originalImage) {
+                return data.image_url;
+            }
+        } catch (e) {
+            // tichý retry
+        }
+    }
+    return null;
 }
 
 // Úprava receptu
