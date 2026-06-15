@@ -1,85 +1,80 @@
-# Boomerchef - Recepty s příběhem
+# BoomerChef - Recepty s příběhem
 
 Elegantní web zaměřený na uchovávání tradičních receptů s nostalgickými příběhy.
+Statický frontend (HTML + CSS + vanilla JS) nad Supabase, s AI pipeline pro
+generování receptů přes Claude a xAI Grok. Hostováno na Netlify, doména
+[boomerchef.cz](https://boomerchef.cz).
 
 ## Struktura projektu
 
 ```
 boomerchef/
-├── index.html          # Titulní stránka s receptem dne
-├── recepty.html        # Přehled všech receptů
-├── o-projektu.html     # Informace o projektu
-├── styles.css          # Všechny CSS styly
-├── script.js           # JavaScript funkcionalita
-├── images/             # Obrázky receptů
-└── README.md           # Tento soubor
+├── index.html                  # Titulní stránka (nejnovější recept)
+├── recepty.html                # Přehled všech receptů (grid)
+├── recept.html                 # Detail receptu (?slug=...)
+├── recept-tisk.html            # Tisková verze receptu
+├── o-projektu.html             # O projektu
+├── admin.html                  # Administrace (přihlášení přes Supabase Auth)
+├── admin-script.js             # Logika administrace + AI generování
+├── admin-styles.css            # Styly administrace
+├── styles.css                  # Hlavní styly + CSS custom properties
+├── config.js                   # Supabase klient + servisní moduly
+├── netlify/functions/          # Serverless funkce pro AI generování
+│   ├── generate-recipe-background.js   # surový recept → Claude → koncept
+│   └── generate-image-background.js    # dogenerování obrázku k receptu
+├── netlify.toml                # Konfigurace Netlify
+├── images/                     # Statické obrázky (placeholder)
+├── AI-PIPELINE.md              # Návod na AI pipeline
+├── SUPABASE-SETUP.md           # Návod na Supabase
+└── README.md                   # Tento soubor
 ```
 
 ## Funkce
 
-- **Responsivní design** - optimalizované pro desktop i mobilní zařízení
-- **Elegantní typografie** - serifové fonty pro nadpisy, bezpatkové pro text
-- **Minimalistický design** - čistý, velkorysý layout
-- **Recept dne** - náhodně vybraný recept na hlavní stránce
-- **Modal okna** - detail receptu v překryvném okně
-- **Optimalizace pro tisk** - recepty lze snadno vytisknout
-- **Rychlé načítání** - statické HTML soubory
+- **Responsivní design** - optimalizované pro desktop i mobil
+- **Elegantní typografie** - Playfair Display (nadpisy), Inter (text)
+- **Recepty na vlastních URL** - každý recept má adresu `recept.html?slug=...` (žádné modaly)
+- **AI generování receptů** - z surového receptu vznikne příběh, suroviny a postup (Claude Opus 4.8)
+- **AI ilustrace** - obrázky ve stylu klasické francouzské kuchařské ilustrace (xAI Grok)
+- **Administrace** - správa receptů, koncepty, publikování jedním klikem
+- **Optimalizace pro tisk** - dedikovaná tisková verze receptu
 
 ## Backend - Supabase
 
-Web nyní používá Supabase jako backend pro:
-- **Databázi receptů** - PostgreSQL databáze
-- **Úložiště obrázků** - Supabase Storage
-- **Autentizaci** - pro administrátorský přístup
+- **Databáze receptů** - PostgreSQL (tabulka `recipes`, schema v `supabase-schema.sql`)
+- **Úložiště obrázků** - Supabase Storage, bucket `recipe-images`
+- **Autentizace** - Supabase Auth pro přístup do administrace
+- **RLS** - veřejné čtení publikovaných receptů, zápis jen pro přihlášené
 
-### Rychlé nastavení
+Podrobný návod: `SUPABASE-SETUP.md`. Přístupové údaje (URL + anon key) jsou v `config.js`
+(anon key je veřejný, OK; service role key tam **nikdy** nesmí být - je jen v Netlify env).
 
-1. Vytvořte účet na [supabase.com](https://supabase.com)
-2. Vytvořte nový projekt
-3. Importujte SQL schema ze souboru `supabase-schema.sql`
-4. Vytvořte Storage bucket `recipe-images`
-5. Aktualizujte přístupové údaje v `config.js`
+## AI pipeline
 
-**Podrobný návod najdete v souboru `SUPABASE-SETUP.md`**
+V administraci (záložka **🤖 Generovat z AI**) vložíš surový recept a Netlify funkce
+zavolá Claude (strukturovaný JSON přes Tool Use) a volitelně xAI Grok na ilustraci.
+Výsledek se uloží jako **koncept** (`is_published=false`), který zkontroluješ a publikuješ.
+
+Tajné klíče (Anthropic, xAI, Supabase service role) jsou jen v Netlify env, nikdy v repu.
+Kompletní návod a seznam env proměnných: **`AI-PIPELINE.md`**.
 
 ## Jak přidat nový recept
 
-### Přes administrační rozhraní (doporučeno)
-1. Otevřete `admin.html` v prohlížeči
-2. Přihlaste se admin údaji
-3. Klikněte na "Přidat recept"
-4. Vyplňte formulář a nahrajte obrázek
-5. Klikněte na "Uložit recept"
+1. Otevři `admin.html` (na produkci `boomerchef.cz/admin.html`) a přihlas se.
+2. Buď **🤖 Generovat z AI** (vlož surový recept, nech vygenerovat), nebo **Přidat recept** (ručně).
+3. Recept zkontroluj a publikuj (tlačítko „Publikovat" u receptu v seznamu).
 
-### Přímo do databáze
-Recepty můžete přidat také přímo přes Supabase SQL Editor.
+## Hosting
 
-## Obrázky
-
-Pro správné zobrazení potřebujete přidat obrázky receptů do složky `images/`:
-
-- `gulasova-polevka.jpg`
-- `smazeny-syr.jpg`
-- `svickova.jpg`
-- `knedliky.jpg`
-- `gulas.jpg`
-- `bramboraky.jpg`
-
-Doporučené rozměry: 800x600px, formát JPG nebo PNG.
-
-## Spuštění
-
-Otevřete `index.html` v prohlížeči nebo nasaďte soubory na webový server.
+- **Netlify** (kvůli serverless funkcím), automatický deploy z větve `main` na GitHubu.
+- **Doména** `boomerchef.cz` vedená u Active24, DNS míří na Netlify (A + CNAME), HTTPS přes Let's Encrypt.
+- Statickou část lze otevřít i lokálně přímo v prohlížeči; AI funkce běží jen na Netlify.
 
 ## Barevná paleta
 
-- **Primární barva:** #8B4513 (elegantní hnědá)
-- **Krémová:** #FFF8E7
-- **Světle šedá:** #F5F5F5
-- **Střední šedá:** #666
-- **Tmavě šedá:** #333
-- **Bílá:** #FFFFFF
-- **Černá:** #000000
+- **Primární (hnědá):** `#8B4513`
+- **Krémová:** `#FFF8E7`
+- **Šedé tóny:** světlá `#F5F5F5`, střední `#666`, tmavá `#333`
 
 ## Typografie
 

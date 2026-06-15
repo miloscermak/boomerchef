@@ -73,7 +73,10 @@
 
                 const recipesHTML = recipes.map(recipe => {
                     const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
-                    const shortStory = recipe.story ? recipe.story.substring(0, 150) + '...' : '';
+                    // Příběh může být HTML (z editoru) – před oříznutím odstraníme tagy,
+                    // jinak by se do karty dostal neuzavřený <p> a rozbil mřížku.
+                    const plainStory = recipe.story ? recipe.story.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+                    const shortStory = plainStory ? plainStory.substring(0, 150) + '...' : '';
                     
                     return `
                         <div class="recipe-card" onclick="window.location.href='recept.html?slug=${recipe.slug}'">

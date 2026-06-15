@@ -186,7 +186,7 @@ function renderRecipesList(recipes) {
                  alt="${recipe.image_alt || recipe.title}">
             <div class="recipe-admin-info">
                 <h3>${recipe.title}</h3>
-                <p>${recipe.story.substring(0, 100)}...</p>
+                <p>${(recipe.story || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 100)}...</p>
                 <div class="recipe-admin-meta">
                     <span class="recipe-status ${recipe.is_published ? 'status-published' : 'status-draft'}">
                         ${recipe.is_published ? 'Publikováno' : 'Koncept'}

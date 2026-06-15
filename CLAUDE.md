@@ -34,7 +34,8 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - V adminu je záložka **🤖 Generovat z AI** – vložíš surový recept, Netlify background funkce `netlify/functions/generate-recipe-background.js` zavolá Claude (Opus 4.8, Tool Use → strukturovaný JSON) a volitelně xAI Grok na obrázek, uloží recept jako **koncept** (`is_published=false`). Editor zkontroluje a publikuje.
 - Klient (`admin-script.js`, `handleAiGenerate`) volá funkci s Bearer Supabase tokenem, pak pollne DB na nový koncept a otevře ho v editaci.
 - Tajné klíče (Anthropic, xAI, Supabase service role) jsou **jen v Netlify env**, nikdy v repu. Kompletní návod: `AI-PIPELINE.md`.
-- Hosting: web se přesouvá z Vercelu na **Netlify** (kvůli funkcím), `netlify.toml` + `package.json` jsou v repu.
+- Hosting: web běží na **Netlify** (kvůli funkcím), doména **boomerchef.cz** (DNS u Active24, A + CNAME na Netlify). Deploy automaticky z větve `main`. `netlify.toml` + `package.json` jsou v repu.
+- Druhá funkce `netlify/functions/generate-image-background.js` dogeneruje obrázek k existujícímu receptu (tlačítko „Vygenerovat obrázek" / „Nový obrázek" v seznamu). Styl obrázků: **klasická francouzská kuchařská ilustrace** (barevná kresba, černý obrys + pastelové výplně, na šířku).
 
 ## Supabase
 
@@ -67,3 +68,4 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - **SPA routing byl opuštěn** – každá stránka má svou vlastní jednoduchou logiku, žádný klientský router.
 - **Formátování odstavců v `story`** – viz výše, dva režimy (plain text / HTML).
 - **Načítání na `index.html`** dříve nefungovalo, teď bere první z `getAllRecipes()` (řazeno `created_at DESC`).
+- **Náhled `story` v kartách/seznamech:** `story` může být HTML. Při zkracování přes `substring()` nikdy neřež syrové HTML – nejdřív odstraň tagy (`replace(/<[^>]+>/g, ' ')`), jinak se do karty dostane neuzavřený `<p>` a rozbije grid na `recepty.html` (následující recepty se zobrazí po jednom). Detail (`recept.html`) a titulka používají `formatStoryText()`, který HTML zvládá.
