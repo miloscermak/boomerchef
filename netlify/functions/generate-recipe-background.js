@@ -24,7 +24,11 @@
 // Node 18+ (Netlify) má fetch globálně, žádná závislost není potřeba.
 
 const ANTHROPIC_VERSION = '2023-06-01';
-const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8';
+// Fable 5 je nejschopnější model Anthropicu (dražší než Opus). Kdyby požadavek
+// odmítly jeho bezpečnostní klasifikátory, API díky `fallbacks` automaticky
+// zopakuje generování na Opusu 4.8 v rámci téhož volání.
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-fable-5';
+const ANTHROPIC_FALLBACK_MODEL = 'claude-opus-4-8';
 const XAI_IMAGE_MODEL = process.env.XAI_IMAGE_MODEL || 'grok-imagine-image-quality';
 const BUCKET = 'recipe-images';
 
@@ -124,14 +128,21 @@ async function callClaude(recipeText) {
     messages: [{ role: 'user', content: `Zpracuj tento recept:\n\n${recipeText}` }]
   };
 
-  const apiKey = envOrError('ANTHROPIC_API_KEY');
+  const headers = {
+    'x-api-key': envOrError('ANTHROPIC_API_KEY'),
+    'anthropic-version': ANTHROPIC_VERSION,
+    'content-type': 'application/json'
+  };
+
+  // Server-side fallback dává smysl jen když je hlavní model jiný než záložní
+  if (ANTHROPIC_MODEL !== ANTHROPIC_FALLBACK_MODEL) {
+    headers['anthropic-beta'] = 'server-side-fallback-2026-06-01';
+    body.fallbacks = [{ model: ANTHROPIC_FALLBACK_MODEL }];
+  }
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': ANTHROPIC_VERSION,
-      'content-type': 'application/json'
-    },
+    headers,
     body: JSON.stringify(body)
   });
 
@@ -139,6 +150,8 @@ async function callClaude(recipeText) {
   if (!response.ok) {
     throw new Error(`Anthropic API ${response.status}: ${data.error?.message || JSON.stringify(data)}`);
   }
+
+  console.log(`[generate-recipe] text napsal model: ${data.model} (stop_reason=${data.stop_reason})`);
 
   const toolUse = (data.content || []).find(b => b.type === 'tool_use' && b.name === RECIPE_TOOL.name);
   if (!toolUse) {

@@ -67,7 +67,7 @@ Netlify → Site → **Site settings → Environment variables** přidej:
 | `SUPABASE_URL` | `https://odggjljpjvshwcagxcza.supabase.co` | přístup k DB a Storage |
 | `SUPABASE_SERVICE_ROLE` | `eyJ…` (service_role) | zápis konceptu (bypass RLS) |
 | `SUPABASE_ANON_KEY` | `eyJ…` (anon) | ověření přihlášeného admina |
-| `ANTHROPIC_MODEL` | `claude-opus-4-8` *(volitelné)* | model pro text |
+| `ANTHROPIC_MODEL` | `claude-fable-5` *(volitelné, default)* | model pro text (recepty); obrázkové prompty jedou na Opus 4.8 |
 | `XAI_IMAGE_MODEL` | `grok-imagine-image-quality` *(volitelné)* | model pro obrázek |
 
 Po uložení spusť **Deploys → Trigger deploy → Deploy site**.
