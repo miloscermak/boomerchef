@@ -31,7 +31,8 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 
 ## AI generování receptů (Netlify funkce)
 
-- V adminu je záložka **🤖 Generovat z AI** – vložíš surový recept, Netlify background funkce `netlify/functions/generate-recipe-background.js` zavolá Claude (Opus 4.8, Tool Use → strukturovaný JSON) a volitelně xAI Grok na obrázek, uloží recept jako **koncept** (`is_published=false`). Editor zkontroluje a publikuje.
+- V adminu je záložka **🤖 Generovat z AI** – vložíš surový recept, Netlify background funkce `netlify/functions/generate-recipe-background.js` zavolá Claude (Tool Use → strukturovaný JSON) a volitelně xAI Grok na obrázek, uloží recept jako **koncept** (`is_published=false`). Editor zkontroluje a publikuje.
+- **Model pro text receptů: Claude Fable 5** (`claude-fable-5`, od července 2026; dražší než Opus – $10/$50 za MTok). Ve funkci je server-side fallback na `claude-opus-4-8` – kdyby Fable požadavek odmítl, API automaticky dogeneruje Opusem v rámci téhož volání. Který model reálně psal, je vidět v Netlify logu (`text napsal model: …`). Prompty na obrázky (`generate-image-background.js`) jedou dál na Opus 4.8. Pozor: env proměnná `ANTHROPIC_MODEL` v Netlify přebíjí default v kódu.
 - Klient (`admin-script.js`, `handleAiGenerate`) volá funkci s Bearer Supabase tokenem, pak pollne DB na nový koncept a otevře ho v editaci.
 - Tajné klíče (Anthropic, xAI, Supabase service role) jsou **jen v Netlify env**, nikdy v repu. Kompletní návod: `AI-PIPELINE.md`.
 - Hosting: web běží na **Netlify** (kvůli funkcím), doména **boomerchef.cz** (DNS u Active24, A + CNAME na Netlify). Deploy automaticky z větve `main`. `netlify.toml` + `package.json` jsou v repu.
