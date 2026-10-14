@@ -39,8 +39,10 @@ na Netlify, kde je zbytek pipeline.
 2. Vyber GitHub repo `miloscermak/boomerchef`, větev `main`.
 3. Build nastavení Netlify načte z `netlify.toml` automaticky (publish = root, funkce v `netlify/functions`).
 4. Deploy. Web pojede na `nazev.netlify.app`.
-5. Případnou vlastní doménu přesměruj na Netlify (Domain settings) a starý Vercel projekt
-   můžeš pak vypnout.
+5. Případnou vlastní doménu přesměruj na Netlify (Domain settings).
+6. Starý Vercel projekt **smaž** (Vercel → projekt → Settings → Delete Project). Samotné
+   přesměrování domény nestačí – Vercel je napojený na GitHub a dál by nasazoval každý
+   commit na `boomerchef.vercel.app` (bez AI funkcí, jako duplicitní kopie webu).
 
 > Statická část webu funguje úplně stejně jako dřív – jen přibyla funkce navíc.
 

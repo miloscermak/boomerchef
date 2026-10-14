@@ -89,20 +89,12 @@ Ukázkové recepty jsou již v SQL schema, ale pokud chcete přidat více:
 
 ## 10. Nasazení (volitelné)
 
-Pro produkční nasazení doporučujeme:
+Web běží na **Netlify** (zdarma) – potřebuje ho kvůli serverless funkcím pro AI
+generování receptů. Postup je v `AI-PIPELINE.md`.
 
-### Vercel (zdarma)
-1. Nahrajte kód na GitHub
-2. Propojte s Vercel
-3. Nasaďte
-
-### Netlify (zdarma)
 1. Nahrajte kód na GitHub
 2. Propojte s Netlify
 3. Nasaďte
-
-### Vlastní hosting
-Stačí nahrát všechny soubory na webový server s podporou statických stránek.
 
 ## Struktura souborů po nastavení
 
