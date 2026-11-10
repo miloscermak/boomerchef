@@ -124,17 +124,6 @@ header {
     padding: var(--spacing-xxl) var(--spacing-md);
 }
 
-.recipe-of-day {
-    margin-bottom: var(--spacing-xxl);
-}
-
-.recipe-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-xl);
-    align-items: start;
-}
-
 .recipe-image {
     position: relative;
     overflow: hidden;
@@ -161,10 +150,6 @@ header {
 
 .recipe-image:hover img {
     transform: scale(1.02);
-}
-
-.recipe-content {
-    padding: var(--spacing-md);
 }
 
 .recipe-title {
@@ -260,14 +245,6 @@ header {
     padding-left: var(--spacing-xl);
 }
 
-.instruction-detail {
-    display: block;
-    margin-top: var(--spacing-xs);
-    color: var(--medium-gray);
-    font-weight: normal;
-    font-size: 0.95rem;
-}
-
 /* Mřížka receptů */
 .recipes-grid {
     display: grid;
@@ -277,6 +254,9 @@ header {
 }
 
 .recipe-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
     background-color: var(--white);
     border-radius: 8px;
     overflow: hidden;
@@ -351,11 +331,6 @@ footer {
         gap: var(--spacing-md);
     }
     
-    .recipe-container {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-md);
-    }
-    
     .recipe-image img {
         height: 250px;
     }
@@ -388,11 +363,6 @@ footer {
         padding: 0;
     }
     
-    .recipe-container {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-md);
-    }
-    
     .recipe-image img {
         height: 200px;
         page-break-inside: avoid;
@@ -413,323 +383,9 @@ footer {
     }
 }
 
-/* Animace */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.recipe-container {
-    animation: fadeIn 0.6s ease-out;
-}
-
-/* Modal styly - jednoduchý článkový design */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.75);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content.article-style {
-    background-color: var(--white);
-    margin: 2% auto;
-    padding: 0;
-    width: 90%;
-    max-width: 700px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 8px;
-    position: relative;
-    animation: modalSlideIn 0.3s ease-out;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-}
-
-/* Článkový design */
-.close-simple {
-    position: absolute;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--medium-gray);
-    cursor: pointer;
-    z-index: 10;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.close-simple:hover {
-    background: var(--light-gray);
-    color: var(--dark-gray);
-}
-
-.recipe-article {
-    padding: var(--spacing-xxl) var(--spacing-xl);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.7;
-}
-
-/* Hlavička článku */
-.article-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--light-gray);
-    padding-bottom: var(--spacing-lg);
-}
-
-.article-title {
-    font-family: var(--font-serif);
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: var(--dark-gray);
-    margin: 0 0 var(--spacing-md) 0;
-    line-height: 1.3;
-}
-
-.article-meta {
-    color: var(--medium-gray);
-    font-size: 0.95rem;
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-md);
-    flex-wrap: wrap;
-}
-
-.meta-item {
-    display: inline-block;
-}
-
-/* Hlavní obrázek */
-.article-image {
-    margin: 0 0 var(--spacing-xl) 0;
-}
-
-.article-image img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-/* Obsah článku */
-.article-content {
-    font-size: 1.1rem;
-    color: var(--dark-gray);
-}
-
-.story-section {
-    margin-bottom: var(--spacing-xl);
-    font-size: 1.15rem;
-    line-height: 1.8;
-    color: var(--medium-gray);
-    border-left: 4px solid var(--primary-color);
-    padding-left: var(--spacing-md);
-    background: var(--cream);
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg);
-    border-radius: 0 8px 8px 0;
-}
-
-.story-section p {
-    margin-bottom: var(--spacing-md);
-}
-
-.story-section p:last-child {
-    margin-bottom: 0;
-}
-
-/* Sekce */
-.ingredients-section,
-.instructions-section {
-    margin-bottom: var(--spacing-xl);
-}
-
-.article-content h2 {
-    font-family: var(--font-serif);
-    font-size: 1.6rem;
-    color: var(--primary-color);
-    margin: 0 0 var(--spacing-md) 0;
-    font-weight: 600;
-    border-bottom: 2px solid var(--primary-color);
-    padding-bottom: var(--spacing-xs);
-}
-
-/* Jednoduché seznamy */
-.simple-ingredients {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.simple-ingredients li {
-    padding: var(--spacing-xs) 0;
-    border-bottom: 1px solid var(--light-gray);
-    position: relative;
-    padding-left: var(--spacing-md);
-}
-
-.simple-ingredients li:before {
-    content: '•';
-    color: var(--primary-color);
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-}
-
-.simple-instructions {
-    list-style: none;
-    counter-reset: step-counter;
-    padding: 0;
-    margin: 0;
-}
-
-.simple-instructions li {
-    counter-increment: step-counter;
-    margin-bottom: var(--spacing-md);
-    position: relative;
-    padding-left: var(--spacing-lg);
-    line-height: 1.7;
-}
-
-.simple-instructions li:before {
-    content: counter(step-counter) ".";
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: var(--primary-color);
-    font-weight: 600;
-    min-width: var(--spacing-md);
-}
-
-/* Footer článku */
-.article-footer {
-    margin-top: var(--spacing-xxl);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid var(--light-gray);
-    text-align: center;
-}
-
-.print-button {
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.print-button:hover {
-    background: #723708;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.close {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-md);
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--medium-gray);
-    cursor: pointer;
-    z-index: 1001;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.close:hover {
-    color: var(--primary-color);
-    background-color: rgba(139, 69, 19, 0.1);
-}
-
-/* Responsivita článkového designu */
-@media (max-width: 768px) {
-    .modal-content.article-style {
-        margin: 1% auto;
-        width: 95%;
-        max-height: 95vh;
-        border-radius: 6px;
-    }
-    
-    .recipe-article {
-        padding: var(--spacing-lg) var(--spacing-md);
-    }
-    
-    .article-title {
-        font-size: 1.8rem;
-    }
-    
-    .article-meta {
-        flex-direction: column;
-        gap: var(--spacing-xs);
-    }
-    
-    .article-content {
-        font-size: 1rem;
-    }
-    
-    .story-section {
-        font-size: 1.05rem;
-        padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .article-content h2 {
-        font-size: 1.4rem;
-    }
-    
-    .close-simple {
-        top: var(--spacing-xs);
-        right: var(--spacing-xs);
-        font-size: 1.8rem;
-        width: 35px;
-        height: 35px;
-    }
-}
-
 /* Utility třídy */
 .text-center {
     text-align: center;
-}
-
-.mb-lg {
-    margin-bottom: var(--spacing-lg);
-}
-
-.mt-lg {
-    margin-top: var(--spacing-lg);
 }
 
 .recipe-meta {
