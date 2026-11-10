@@ -1,4 +1,6 @@
 -- Jednoduchá verze schema pro testování (bez RLS politik)
+-- POZOR: NIKDY nespouštět na produkci. Bez RLS může recepty kdokoli s veřejným
+-- anon key číst (včetně konceptů), přepisovat i mazat. Produkce: supabase-schema.sql.
 
 -- Smažeme existující tabulku pokud existuje
 DROP TABLE IF EXISTS recipes;

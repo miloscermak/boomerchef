@@ -48,7 +48,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
   - `image_url` (jen název souboru v bucketu, plnou URL skládá `ImageService.getImageUrl()`)
   - `is_published`, `featured`, `cooking_time`, `difficulty_level`, `servings`, `category`
 - **Storage bucket:** `recipe-images` (Public).
-- **RLS:** veřejné čtení publikovaných receptů; zápis jen pro autentifikované.
+- **RLS:** veřejné čtení publikovaných receptů; zápis jen pro autentifikované. Platí pro `recipes` i `about_page`. V listopadu 2026 se ukázalo, že na produkci bylo RLS na obou tabulkách vypnuté (koncepty šly číst anonymně) – po každém zásahu do schématu zkontroluj Supabase → Advisors → Security. Registrace nových uživatelů musí být v Supabase Auth vypnutá, protože zápis smí každý přihlášený.
 
 ## Konvence
 

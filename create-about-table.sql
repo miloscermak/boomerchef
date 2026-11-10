@@ -32,3 +32,13 @@ CREATE TRIGGER update_about_page_updated_at
     BEFORE UPDATE ON about_page 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
+
+-- RLS: číst může každý, upravovat jen přihlášený admin.
+-- Bez toho je tabulka přes veřejný anon key otevřená komukoli i pro zápis.
+ALTER TABLE about_page ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Všichni mohou číst stránku O projektu" ON about_page
+    FOR SELECT USING (true);
+
+CREATE POLICY "Pouze přihlášení mohou upravovat stránku O projektu" ON about_page
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
