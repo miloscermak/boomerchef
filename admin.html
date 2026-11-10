@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
     <title>Administrace - BoomerChef</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="admin-styles.css">
@@ -65,7 +66,7 @@
             <!-- Generování receptu z AI -->
             <div id="ai-generate-tab" class="tab-content">
                 <h2>Vygenerovat recept přes AI</h2>
-                <p class="ai-hint">Vlož surový recept (suroviny + postup, klidně rozsypaně). Claude (Opus&nbsp;4.8) z něj napíše příběh, standardizuje suroviny a postup a&nbsp;volitelně vygeneruje obrázek. Hotový recept se objeví jako <strong>koncept</strong>, který si zkontroluješ a&nbsp;teprve pak publikuješ.</p>
+                <p class="ai-hint">Vlož surový recept (suroviny + postup, klidně rozsypaně). Claude z něj napíše příběh, standardizuje suroviny a postup a&nbsp;volitelně vygeneruje obrázek. Hotový recept se objeví jako <strong>koncept</strong>, který si zkontroluješ a&nbsp;teprve pak publikuješ.</p>
 
                 <form id="ai-form" class="recipe-form">
                     <div class="form-group">
@@ -112,7 +113,7 @@
                     <div class="form-group">
                         <label for="recipe-story">Příběh receptu *</label>
                         <div id="story-editor" class="quill-editor"></div>
-                        <textarea id="recipe-story" name="story" required style="display: none;"></textarea>
+                        <textarea id="recipe-story" name="story" style="display: none;"></textarea>
                         <small>Použijte editor pro formátování textu. Odstavce oddělte prázdným řádkem.</small>
                     </div>
 
@@ -201,7 +202,7 @@
 
                 <div id="form-success" class="success-message" style="display: none;"></div>
                 <div id="form-error" class="error-message" style="display: none;"></div>
-                <div id="upload-progress" class="progress-message" style="display: none;"></div>
+                <div id="form-progress" class="progress-message" style="display: none;"></div>
             </div>
 
             <!-- Editace stránky O projektu -->
@@ -216,7 +217,7 @@
                     <div class="form-group">
                         <label for="about-content">Obsah stránky *</label>
                         <div id="about-editor" class="quill-editor"></div>
-                        <textarea id="about-content" name="content" required style="display: none;"></textarea>
+                        <textarea id="about-content" name="content" style="display: none;"></textarea>
                         <small>Použijte editor pro formátování textu, přidávání odkazů a obrázků.</small>
                     </div>
 

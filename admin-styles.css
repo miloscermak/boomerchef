@@ -426,10 +426,11 @@
     color: #aaa;
     font-style: italic;
 }
+
 /* Nápověda v sekci AI generování */
 .ai-hint {
-    background: #FFF8E7;
-    border-left: 4px solid #8B4513;
+    background: var(--cream);
+    border-left: 4px solid var(--primary-color);
     padding: 1rem 1.25rem;
     border-radius: 6px;
     margin-bottom: 1.5rem;

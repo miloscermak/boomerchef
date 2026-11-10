@@ -183,23 +183,23 @@ function renderRecipesList(recipes) {
     recipesList.innerHTML = recipes.map(recipe => `
         <div class="recipe-admin-item">
             <img src="${recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg'}"
-                 alt="${recipe.image_alt || recipe.title}">
+                 alt="${Utils.escapeHtml(recipe.image_alt || recipe.title)}">
             <div class="recipe-admin-info">
-                <h3>${recipe.title}</h3>
-                <p>${(recipe.story || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 100)}...</p>
+                <h3>${Utils.escapeHtml(recipe.title)}</h3>
+                <p>${Utils.storyPreview(recipe.story, 100)}</p>
                 <div class="recipe-admin-meta">
                     <span class="recipe-status ${recipe.is_published ? 'status-published' : 'status-draft'}">
                         ${recipe.is_published ? 'Publikováno' : 'Koncept'}
                     </span>
                     ${recipe.featured ? '<span class="recipe-status status-featured">Doporučené</span>' : ''}
-                    <span class="recipe-status">${recipe.category}</span>
+                    <span class="recipe-status">${Utils.escapeHtml(recipe.category || '')}</span>
                 </div>
             </div>
             <div class="recipe-admin-actions">
                 <button class="btn-primary btn-small" onclick="togglePublish('${recipe.id}')">${recipe.is_published ? 'Skrýt' : 'Publikovat'}</button>
                 <button class="btn-secondary btn-small" onclick="generateRecipeImage('${recipe.id}', this)">${recipe.image_url ? 'Nový obrázek' : 'Vygenerovat obrázek'}</button>
                 <button class="btn-secondary btn-small" onclick="editRecipe('${recipe.id}')">Upravit</button>
-                <button class="btn-danger btn-small" onclick="deleteRecipe('${recipe.id}', '${recipe.title}')">Smazat</button>
+                <button class="btn-danger btn-small" onclick="deleteRecipe('${recipe.id}')">Smazat</button>
             </div>
         </div>
     `).join('');
@@ -302,8 +302,14 @@ function editRecipe(id) {
     // Naplnění formuláře
     document.getElementById('recipe-id').value = recipe.id;
     document.getElementById('recipe-title').value = recipe.title;
-    document.getElementById('recipe-slug').value = recipe.slug;
+    // Slug existujícího receptu se při úpravě názvu nesmí sám přepsat –
+    // změnila by se URL a staré odkazy by přestaly fungovat.
+    const slugField = document.getElementById('recipe-slug');
+    slugField.value = recipe.slug;
+    slugField.dataset.auto = 'false';
     document.getElementById('recipe-story').value = recipe.story;
+    // Soubor vybraný dřív (u jiného receptu) by se jinak nahrál k tomuhle
+    document.getElementById('recipe-image').value = '';
     
     // Načtení obsahu do Quill editoru
     loadContentToEditor(recipe.story);
@@ -333,6 +339,7 @@ function cancelEdit() {
     document.getElementById('recipe-id').value = '';
     document.getElementById('form-title').textContent = 'Přidat nový recept';
     document.getElementById('cancel-edit').style.display = 'none';
+    document.getElementById('recipe-slug').dataset.auto = 'true';
     
     // Vyčištění editoru
     clearEditor();
@@ -342,14 +349,15 @@ function cancelEdit() {
 }
 
 // Smazání receptu
-async function deleteRecipe(id, title) {
-    if (!confirm(`Opravdu chcete smazat recept "${title}"? Tato akce je nevratná.`)) {
+async function deleteRecipe(id) {
+    const recipe = allRecipes.find(r => r.id === id);
+    if (!recipe) return;
+
+    if (!confirm(`Opravdu chcete smazat recept "${recipe.title}"? Tato akce je nevratná.`)) {
         return;
     }
     
     try {
-        const recipe = allRecipes.find(r => r.id === id);
-        
         // Smazání obrázku z úložiště
         if (recipe.image_url) {
             await ImageService.deleteImage(recipe.image_url);
@@ -378,6 +386,11 @@ async function handleRecipeSubmit(e) {
         // Získání dat z formuláře
         const formData = new FormData(recipeForm);
         const imageFile = formData.get('image');
+
+        // Příběh je povinný; prázdný Quill editor vrací '<p><br></p>'
+        if (!Utils.stripHtml(formData.get('story'))) {
+            throw new Error('Příběh receptu je povinný.');
+        }
         
         // Příprava dat receptu
         const recipeData = {
@@ -412,6 +425,7 @@ async function handleRecipeSubmit(e) {
             await RecipeService.createRecipe(recipeData);
             showMessage('success', 'Recept byl úspěšně vytvořen!');
             recipeForm.reset();
+            document.getElementById('recipe-slug').dataset.auto = 'true';
             clearEditor();
         }
         
@@ -492,8 +506,12 @@ function initializeEditor() {
 
 // Funkce pro načtení obsahu do editoru
 function loadContentToEditor(content) {
-    if (storyEditor && content) {
+    if (!storyEditor) return;
+    if (content) {
         storyEditor.root.innerHTML = content;
+    } else {
+        // Bez obsahu editor vyprázdníme, jinak by v něm zůstal příběh předchozího receptu
+        clearEditor();
     }
 }
 
@@ -519,7 +537,7 @@ async function loadAboutContent() {
         if (error) {
             if (error.code === 'PGRST116') {
                 // No data found, use default content
-                const defaultContent = '<p>Boomerchef je osobní projekt Miloše Čermáka, který vznikl v rámci iniciativy Inspiruj.se. Jeho cílem je ukázat, jak může generativní umělá inteligence měnit svět žurnalistiky, tvorby obsahu – a třeba i receptů.</p>';
+                const defaultContent = '<p>BoomerChef je osobní projekt Miloše Čermáka, který vznikl v rámci iniciativy Inspiruj.se. Jeho cílem je ukázat, jak může generativní umělá inteligence měnit svět žurnalistiky, tvorby obsahu – a třeba i receptů.</p>';
                 aboutEditor.root.innerHTML = defaultContent;
                 document.getElementById('about-content').value = defaultContent;
                 return;
@@ -604,7 +622,7 @@ const AI_FUNCTION_URL = '/.netlify/functions/generate-recipe-background';
 
 function showAiMessage(type, message) {
     const el = document.getElementById(`ai-${type}`);
-    if (el) { el.innerHTML = message; el.style.display = 'block'; }
+    if (el) { el.textContent = message; el.style.display = 'block'; }
 }
 function hideAiMessage(type) {
     const el = document.getElementById(`ai-${type}`);
@@ -649,7 +667,9 @@ async function handleAiGenerate(e) {
             body: JSON.stringify({ recipe_text: recipeText, generate_image: generateImage })
         });
 
-        // Background funkce vrací 202 (přijato). Cokoliv 4xx je rovnou chyba.
+        // Background funkce vrací hned 202 (přijato) – chyby uvnitř funkce (i neplatné
+        // přihlášení) se sem nedostanou, jsou jen v Netlify logu. 4xx/5xx znamená,
+        // že se funkci vůbec nepodařilo spustit.
         if (response.status >= 400) {
             const txt = await response.text();
             throw new Error(`Funkce vrátila ${response.status}: ${txt}`);
