@@ -12,7 +12,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 ## Struktura souborů
 
 ### Veřejné stránky
-- `index.html` – titulní stránka, načítá **nejnovější** recept (i když se sekce jmenuje `latest-recipe`; dříve to byl náhodný "recept dne", `RecipeService.getRandomRecipe()` v `config.js` ještě existuje)
+- `index.html` – titulní stránka, načítá **nejnovější** recept přes `RecipeService.getLatestRecipe()` (dříve to byl náhodný "recept dne", `RecipeService.getRandomRecipe()` v `config.js` ještě existuje)
 - `recepty.html` – grid všech receptů
 - `recept.html` – detail jednoho receptu, parametr `?slug=...`
 - `recept-tisk.html` – tisková verze receptu
@@ -25,7 +25,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - `images/` – statické obrázky (placeholdery); reálné fotky receptů jdou do Supabase Storage
 
 ### Mrtvé / legacy soubory (nepoužívat, ale neexistují bezdůvodně)
-- `index-old.html`, `index-spa.html`, `pages.js`, `router.js` – pozůstatky neúspěšného SPA pokusu (viz `FIXED-ISSUES.md`). Nepoužívají se.
+- `index-old.html`, `index-spa.html`, `pages.js`, `router.js`, `app.js` – pozůstatky neúspěšného SPA pokusu (viz `FIXED-ISSUES.md`). Nepoužívají se.
 - `test-formatting.html` – testovací stránka pro formátování odstavců.
 - `create-admin.sql`, `create-about-table.sql`, `simple-schema.sql` – starší/pomocná SQL.
 
@@ -53,7 +53,8 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 ## Konvence
 
 - **Jazyk:** UI a komentáře v kódu česky. Identifikátory, git commity a názvy souborů anglicky.
-- **Slug** generuje `Utils.createSlug()` – odstraňuje diakritiku, lowercase, spojuje pomlčkami.
+- **Slug** generuje `Utils.createSlug()` – odstraňuje diakritiku, lowercase, spojuje pomlčkami. U existujícího receptu se slug při změně názvu **nepřegenerovává** (změnila by se URL).
+- **Vkládání dat do HTML:** názvy a alt texty vždy přes `Utils.escapeHtml()` (v názvech jsou běžně uvozovky), suroviny a postup přes `Utils.toListItems()`, náhledy příběhu přes `Utils.storyPreview()`.
 - **Příběh receptu** formátuje `Utils.formatStoryText()` – pokud text už obsahuje `<p>` nebo `<div>` (z Quill editoru v adminu), použije ho přímo a jen dotuje styling. Jinak rozdělí na odstavce podle prázdných řádků. Při úpravách formátování **vždy** otestovat oba režimy (plain text i HTML z editoru).
 - **CSS:** používáme custom properties (`--primary-color: #8B4513`, `--spacing-md`, atd.) definované v `styles.css`. Drž se palety: hnědá `#8B4513`, krémová `#FFF8E7`, šedá tóny.
 
@@ -68,6 +69,9 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - **Modal vs. samostatné URL:** recepty se otevírají na vlastní stránce `recept.html?slug=...`, **ne** v modalu. Při přidávání nové funkce na detail receptu uprav `recept.html`.
 - **SPA routing byl opuštěn** – každá stránka má svou vlastní jednoduchou logiku, žádný klientský router.
 - **Formátování odstavců v `story`** – viz výše, dva režimy (plain text / HTML).
-- **Načítání na `index.html`** dříve nefungovalo, teď bere první z `getAllRecipes()` (řazeno `created_at DESC`).
-- **Náhled `story` v kartách/seznamech:** `story` může být HTML. Při zkracování přes `substring()` nikdy neřež syrové HTML – nejdřív odstraň tagy (`replace(/<[^>]+>/g, ' ')`), jinak se do karty dostane neuzavřený `<p>` a rozbije grid na `recepty.html` (následující recepty se zobrazí po jednom). Detail (`recept.html`) a titulka používají `formatStoryText()`, který HTML zvládá.
+- **Načítání na `index.html`** dříve nefungovalo, teď bere `getLatestRecipe()` (řazeno `created_at DESC`, limit 1).
+- **Náhled `story` v kartách/seznamech:** `story` může být HTML. Při zkracování přes `substring()` nikdy neřež syrové HTML – použij `Utils.storyPreview()` (nejdřív odstraní tagy), jinak se do karty dostane neuzavřený `<p>` a rozbije grid na `recepty.html` (následující recepty se zobrazí po jednom). Detail (`recept.html`) používá `formatStoryText()`, který HTML zvládá; s parametrem `maxLength` (titulka) vrací zkrácený textový náhled.
+- **Sloupce v `recipes`:** čas je `cooking_time` (ne `prep_time`/`cook_time`), pole `notes` neexistuje. Stránky dřív četly neexistující sloupce a čas se proto nikdy nezobrazil.
+- **Skrytá `<textarea required>`** (pod Quill editorem) tiše zablokuje odeslání formuláře – povinnost příběhu se proto hlídá v JS (`handleRecipeSubmit`).
+- **Model přes env:** `ANTHROPIC_MODEL` čtou obě Netlify funkce. Novější modely (Fable 5.1+, Opus 5.5, Sonnet 5.5) odmítají vynucený `tool_choice`, na kterém obě funkce stojí.
 - **Hosting je jen Netlify.** Web původně běžel na Vercelu a jeho GitHub napojení zůstalo aktivní i po přechodu na Netlify – rok nasazoval každý commit na `boomerchef.vercel.app` (duplicitní kopie bez AI funkcí). Vercel projekt byl smazán 14. 10. 2026. Pokud se u commitů na GitHubu znovu objeví status „Vercel", někdo napojení obnovil. Netlify na GitHub stav nasazení nehlásí, takže chybějící zelené zatržítko u commitu je v pořádku.

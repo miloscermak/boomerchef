@@ -4,7 +4,7 @@
 //
 // Pipeline:
 //   1) ověří přihlášení (Supabase token)
-//   2) zavolá Claude (Opus 4.8) s Tool Use → strukturovaný recept jako JSON
+//   2) zavolá Claude (Fable 5, záloha Opus 4.8) s Tool Use → strukturovaný recept jako JSON
 //   3) (volitelně) vygeneruje obrázek přes xAI Grok → upload do Supabase Storage
 //   4) vloží recept do tabulky `recipes` jako KONCEPT (is_published=false)
 //
@@ -14,9 +14,9 @@
 //
 // Vyžaduje Netlify env proměnné (viz AI-PIPELINE.md):
 //   ANTHROPIC_API_KEY      – klíč k Anthropic API
-//   ANTHROPIC_MODEL        – volitelné, default 'claude-opus-4-8'
+//   ANTHROPIC_MODEL        – volitelné, default 'claude-fable-5' (POZOR: čte ji i generate-image)
 //   XAI_API_KEY            – klíč k xAI (Grok) pro generování obrázku
-//   XAI_IMAGE_MODEL        – volitelné, default 'grok-2-image-1212'
+//   XAI_IMAGE_MODEL        – volitelné, default 'grok-imagine-image-quality'
 //   SUPABASE_URL           – např. https://odggjljpjvshwcagxcza.supabase.co
 //   SUPABASE_SERVICE_ROLE  – service role klíč (zápis do recipes přes RLS)
 //   SUPABASE_ANON_KEY      – anon klíč (jen na ověření tokenu uživatele)
@@ -97,8 +97,8 @@ function makeSlug(title) {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .substring(0, 60);
+    .substring(0, 60)
+    .replace(/^-+|-+$/g, ''); // až po oříznutí, jinak může slug končit pomlčkou
 }
 
 // Ověření přihlášeného uživatele přes Supabase Auth (aby endpoint nešel zneužít).

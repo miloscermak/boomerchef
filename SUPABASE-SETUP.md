@@ -82,10 +82,10 @@ const SUPABASE_CONFIG = {
 
 ## 9. Nahrání ukázkových dat
 
-Ukázkové recepty jsou již v SQL schema, ale pokud chcete přidat více:
+SQL schema žádné ukázkové recepty neobsahuje. Recepty přidáte:
 
-1. Použijte administrační rozhraní (`admin.html`)
-2. Nebo vložte data přímo přes SQL Editor v Supabase
+1. Přes administrační rozhraní (`admin.html`)
+2. Nebo vložením dat přímo přes SQL Editor v Supabase
 
 ## 10. Nasazení (volitelné)
 
@@ -102,13 +102,14 @@ generování receptů. Postup je v `AI-PIPELINE.md`.
 boomerchef/
 ├── index.html              # Hlavní stránka
 ├── recepty.html            # Seznam receptů
+├── recept.html             # Detail receptu
+├── recept-tisk.html        # Tisková verze receptu
 ├── o-projektu.html         # O projektu
 ├── admin.html              # Administrace
 ├── styles.css              # Hlavní styly
 ├── admin-styles.css        # Admin styly
-├── script.js               # Frontend logika
 ├── admin-script.js         # Admin logika
-├── config.js               # Supabase konfigurace
+├── config.js               # Supabase konfigurace + sdílené služby
 ├── supabase-schema.sql     # SQL schema
 ├── SUPABASE-SETUP.md       # Tento návod
 └── README.md               # Dokumentace

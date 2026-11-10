@@ -1,13 +1,13 @@
 # AI generování receptů – nastavení
 
-Tahle pipeline umožní v administraci vložit **surový recept** a nechat Claude (Opus 4.8)
+Tahle pipeline umožní v administraci vložit **surový recept** a nechat Claude (Fable 5, záloha Opus 4.8)
 vygenerovat hotový recept pro BoomerChef – příběh, standardizované suroviny, postup
 a volitelně ilustrační obrázek (přes xAI Grok). Výsledek se uloží jako **koncept**
 (`is_published = false`), který v adminu zkontroluješ a teprve pak publikuješ.
 
 ```
 ┌─────────────────┐   ┌──────────────────┐   ┌───────────────────┐
-│ Admin: surový   │ → │  Netlify funkce  │ → │  Claude Opus 4.8  │
+│ Admin: surový   │ → │  Netlify funkce  │ → │  Claude Fable 5   │
 │ recept (text)   │   │ generate-recipe  │   │  (Tool Use → JSON)│
 └─────────────────┘   └────────┬─────────┘   └─────────┬─────────┘
                                │                       │
@@ -69,10 +69,14 @@ Netlify → Site → **Site settings → Environment variables** přidej:
 | `SUPABASE_URL` | `https://odggjljpjvshwcagxcza.supabase.co` | přístup k DB a Storage |
 | `SUPABASE_SERVICE_ROLE` | `eyJ…` (service_role) | zápis konceptu (bypass RLS) |
 | `SUPABASE_ANON_KEY` | `eyJ…` (anon) | ověření přihlášeného admina |
-| `ANTHROPIC_MODEL` | `claude-fable-5` *(volitelné, default)* | model pro text (recepty); obrázkové prompty jedou na Opus 4.8 |
+| `ANTHROPIC_MODEL` | *(volitelné – raději nenastavovat)* | přebíjí model v **obou** funkcích: text receptu (default `claude-fable-5`) i prompt na obrázek (default `claude-opus-4-8`) |
 | `XAI_IMAGE_MODEL` | `grok-imagine-image-quality` *(volitelné)* | model pro obrázek |
 
 Po uložení spusť **Deploys → Trigger deploy → Deploy site**.
+
+> **Pozor při změně modelu:** obě funkce si výstup vynucují přes `tool_choice: {type: "tool"}`.
+> Novější modely (Fable 5.1 a 5.2, Opus 5.5, Sonnet 5.5) vynucený tool odmítají chybou 400,
+> takže pouhá změna `ANTHROPIC_MODEL` na ně nestačí – musel by se upravit i kód funkcí.
 
 ---
 
@@ -95,12 +99,14 @@ Koncepty (nepublikované recepty) vidíš i v záložce **Recepty** se štítkem
 - **Recept se neobjeví do pár minut:** Netlify → Functions → `generate-recipe-background` → Logs.
 - **„Chybí env proměnná …" v logu:** nezapomněl jsi přidat všech 5 povinných proměnných a redeploy?
 - **Anthropic 401:** špatný `ANTHROPIC_API_KEY`.
-- **Anthropic 400 (overloaded):** zkus dočasně `ANTHROPIC_MODEL=claude-sonnet-4-6`.
+- **Anthropic 529 (overloaded):** zkus to za chvíli znovu, případně dočasně `ANTHROPIC_MODEL=claude-sonnet-4-6`.
 - **Obrázek chybí, text je OK:** zkontroluj `XAI_API_KEY` a model `grok-imagine-image-quality`
   (název modelu se může u xAI časem změnit – nastav `XAI_IMAGE_MODEL`). Text se uloží
   i bez obrázku, obrázek pak dodáš ručně v editaci.
 - **Supabase insert 401/403:** použil jsi anon místo `service_role`? RLS write potřebuje service role.
-- **401 Unauthorized hned po kliknutí:** vypršela přihlašovací session – odhlas a přihlas se.
+- **„Neautorizovaný požadavek" v logu funkce:** vypršela přihlašovací session – odhlas a přihlas se.
+  Background funkce vrací adminu vždy hned 202, takže tuhle chybu uvidíš jen v Netlify logu
+  (v adminu se projeví tak, že se recept neobjeví).
 
 ---
 

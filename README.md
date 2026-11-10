@@ -34,7 +34,7 @@ boomerchef/
 - **Responsivní design** - optimalizované pro desktop i mobil
 - **Elegantní typografie** - Playfair Display (nadpisy), Inter (text)
 - **Recepty na vlastních URL** - každý recept má adresu `recept.html?slug=...` (žádné modaly)
-- **AI generování receptů** - z surového receptu vznikne příběh, suroviny a postup (Claude Opus 4.8)
+- **AI generování receptů** - z surového receptu vznikne příběh, suroviny a postup (Claude Fable 5, záloha Opus 4.8)
 - **AI ilustrace** - obrázky ve stylu klasické francouzské kuchařské ilustrace (xAI Grok)
 - **Administrace** - správa receptů, koncepty, publikování jedním klikem
 - **Optimalizace pro tisk** - dedikovaná tisková verze receptu
