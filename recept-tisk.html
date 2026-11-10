@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">Recept pro tisk - BoomerChef</title>
+    <meta name="robots" content="noindex">
+    <title>Recept pro tisk - BoomerChef</title>
     <style>
         /* Print-friendly CSS */
         * {
@@ -189,10 +190,8 @@
             }
 
             try {
-                console.log('Načítám recept pro tisk, slug:', slug);
                 const recipe = await RecipeService.getRecipeBySlug(slug);
-                console.log('Načtený recept:', recipe);
-                
+
                 if (!recipe) {
                     document.getElementById('print-content').innerHTML = `
                         <div class="error">
@@ -204,59 +203,14 @@
                 }
 
                 // Nastavení title stránky
-                document.getElementById('page-title').textContent = `${recipe.title} - BoomerChef (verze pro tisk)`;
-                
-                // Zpracování ingrediencí
-                let ingredientsList = '';
-                try {
-                    if (recipe.ingredients) {
-                        if (Array.isArray(recipe.ingredients)) {
-                            ingredientsList = recipe.ingredients
-                                .filter(ingredient => ingredient && String(ingredient).trim())
-                                .map(ingredient => `<li>${String(ingredient).trim()}</li>`)
-                                .join('');
-                        } else {
-                            const ingredientsStr = String(recipe.ingredients);
-                            ingredientsList = ingredientsStr.split('\n')
-                                .filter(ingredient => ingredient.trim())
-                                .map(ingredient => `<li>${ingredient.trim()}</li>`)
-                                .join('');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Chyba při zpracování ingredients:', e);
-                    ingredientsList = '<li>Chyba při načítání ingrediencí</li>';
-                }
-
-                // Zpracování instrukcí
-                let instructionsList = '';
-                try {
-                    if (recipe.instructions) {
-                        if (Array.isArray(recipe.instructions)) {
-                            instructionsList = recipe.instructions
-                                .filter(instruction => instruction && String(instruction).trim())
-                                .map(instruction => `<li>${String(instruction).trim()}</li>`)
-                                .join('');
-                        } else {
-                            const instructionsStr = String(recipe.instructions);
-                            instructionsList = instructionsStr.split('\n')
-                                .filter(instruction => instruction.trim())
-                                .map(instruction => `<li>${instruction.trim()}</li>`)
-                                .join('');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Chyba při zpracování instructions:', e);
-                    instructionsList = '<li>Chyba při načítání instrukcí</li>';
-                }
+                document.title = `${recipe.title} - BoomerChef (verze pro tisk)`;
 
                 const printHTML = `
                     <div class="print-header">
-                        <h1 class="recipe-title">${recipe.title}</h1>
+                        <h1 class="recipe-title">${Utils.escapeHtml(recipe.title)}</h1>
                         <div class="recipe-meta">
                             <span>Publikováno: ${Utils.formatDate(recipe.created_at)}</span>
-                            ${recipe.prep_time ? `<span>Příprava: ${recipe.prep_time} min</span>` : ''}
-                            ${recipe.cook_time ? `<span>Vaření: ${recipe.cook_time} min</span>` : ''}
+                            ${recipe.cooking_time ? `<span>Příprava: ${recipe.cooking_time} min</span>` : ''}
                             ${recipe.servings ? `<span>Porce: ${recipe.servings}</span>` : ''}
                         </div>
                     </div>
@@ -265,14 +219,14 @@
                         <div class="ingredients-section">
                             <h2 class="section-title">Ingredience</h2>
                             <ul class="ingredients-list">
-                                ${ingredientsList}
+                                ${Utils.toListItems(recipe.ingredients)}
                             </ul>
                         </div>
 
                         <div class="instructions-section">
                             <h2 class="section-title">Postup přípravy</h2>
                             <ol class="instructions-list">
-                                ${instructionsList}
+                                ${Utils.toListItems(recipe.instructions)}
                             </ol>
                         </div>
                     </div>
@@ -283,9 +237,6 @@
                 `;
 
                 document.getElementById('print-content').innerHTML = printHTML;
-
-                // Automaticky spustit tisk po načtení (volitelné)
-                // setTimeout(() => window.print(), 1000);
 
             } catch (error) {
                 console.error('Chyba při načítání receptu:', error);

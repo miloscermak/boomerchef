@@ -1,8 +1,8 @@
 // Supabase konfigurace
-// POZOR: Tyto hodnoty je třeba nahradit skutečnými z vašeho Supabase projektu
+// Anon key je veřejný (chrání ho RLS politiky). Service role key sem NIKDY nepatří.
 const SUPABASE_CONFIG = {
-    url: 'https://odggjljpjvshwcagxcza.supabase.co', // Nahraďte vaší Supabase URL
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kZ2dqbGpwanZzaHdjYWd4Y3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4NDE0OTIsImV4cCI6MjA2NTQxNzQ5Mn0.DDU0-aQEnzoCtFByiM3mWmepej4FpcEzBKrSOGySY08', // Nahraďte vaším anonymous key
+    url: 'https://odggjljpjvshwcagxcza.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kZ2dqbGpwanZzaHdjYWd4Y3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4NDE0OTIsImV4cCI6MjA2NTQxNzQ5Mn0.DDU0-aQEnzoCtFByiM3mWmepej4FpcEzBKrSOGySY08',
     bucketName: 'recipe-images' // Název bucket pro obrázky
 };
 
@@ -43,6 +43,25 @@ const RecipeService = {
             return data;
         } catch (error) {
             console.error('Chyba při načítání receptu:', error);
+            return null;
+        }
+    },
+
+    // Načtení nejnovějšího publikovaného receptu (titulní stránka) –
+    // stahujeme jen jeden řádek, ne celou databázi
+    async getLatestRecipe() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('recipes')
+                .select('*')
+                .eq('is_published', true)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+            return data[0] || null;
+        } catch (error) {
+            console.error('Chyba při načítání nejnovějšího receptu:', error);
             return null;
         }
     },
@@ -242,7 +261,7 @@ const Utils = {
             .replace(/[^\w\s-]/g, '') // odstranění speciálních znaků
             .replace(/\s+/g, '-') // nahrazení mezer pomlčkami
             .replace(/--+/g, '-') // nahrazení vícenásobných pomlček jednou
-            .trim('-'); // odstranění pomlček na začátku a konci
+            .replace(/^-+|-+$/g, ''); // odstranění pomlček na začátku a konci
     },
 
     // Formátování data
@@ -261,42 +280,56 @@ const Utils = {
         return emailRegex.test(email);
     },
 
-    // Formátování příběhu s odstavci - podporuje HTML z editoru
+    // Ošetření textu před vložením do HTML (uvozovky v názvu apod.)
+    escapeHtml(text) {
+        const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return String(text ?? '').replace(/[&<>"']/g, ch => entities[ch]);
+    },
+
+    // Odstranění HTML tagů – pro náhledy příběhu v kartách a seznamech.
+    // Syrové HTML se nesmí řezat přes substring(), neuzavřený tag rozbije stránku.
+    stripHtml(html) {
+        return String(html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    },
+
+    // Krátký textový náhled příběhu (bez HTML), tři tečky jen když se opravdu krátí
+    storyPreview(story, maxLength) {
+        const plain = Utils.stripHtml(story);
+        return plain.length > maxLength ? plain.substring(0, maxLength).trimEnd() + '...' : plain;
+    },
+
+    // Suroviny / postup jako <li> položky. V DB je to pole, starší data mohla být text s řádky.
+    toListItems(value) {
+        const items = Array.isArray(value) ? value : String(value ?? '').split('\n');
+        return items
+            .map(item => String(item ?? '').trim())
+            .filter(item => item)
+            .map(item => `<li>${Utils.escapeHtml(item)}</li>`)
+            .join('');
+    },
+
+    // Formátování příběhu s odstavci. Dva režimy: HTML z editoru (použije se přímo)
+    // a prostý text (rozdělí se na odstavce). S maxLength vrací zkrácený textový náhled.
     formatStoryText(story, maxLength = null) {
         if (!story) return '';
-        
-        console.log('Původní story text:', story);
-        
-        // Zkrátíme text pokud je zadán maxLength
-        let text = maxLength && story.length > maxLength 
-            ? story.substring(0, maxLength) + '...' 
-            : story;
-        
-        // Pokud text už obsahuje HTML tagy (z Quill editoru), použijeme ho přímo
-        if (text.includes('<p>') || text.includes('<div>')) {
-            console.log('Text už obsahuje HTML, používám přímo');
-            // Jen přidáme lepší styling k existujícím paragrafům
-            const result = text.replace(/<p>/g, '<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem;">');
-            console.log('Výsledný HTML:', result);
-            return result;
+
+        const paragraphStyle = 'margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem;';
+
+        if (maxLength && Utils.stripHtml(story).length > maxLength) {
+            return `<p style="${paragraphStyle}">${Utils.storyPreview(story, maxLength)}</p>`;
         }
-        
-        console.log('Text po zkrácení:', text);
-        
-        // Pro plain text - rozdělíme na odstavce
-        const paragraphs = text
-            .split(/\n\s*\n|\r\n\s*\r\n|\n/) 
-            .map(p => p.trim())
-            .filter(p => p.length > 0);
-        
-        console.log('Nalezené odstavce:', paragraphs);
-        
-        // Vytvoříme odstavce s mezerami
-        const result = paragraphs
-            .map(paragraph => `<p style="margin-bottom: 3rem; line-height: 1.8; font-size: 1.1rem; display: block;">${paragraph.replace(/\n/g, '<br>')}</p>`)
+
+        // Text z Quill editoru už HTML obsahuje – jen doplníme styl odstavců
+        if (story.includes('<p>') || story.includes('<div>')) {
+            return story.replace(/<p>/g, `<p style="${paragraphStyle}">`);
+        }
+
+        // Prostý text – každý neprázdný řádek je odstavec
+        return story
+            .split(/\r?\n/)
+            .map(paragraph => paragraph.trim())
+            .filter(paragraph => paragraph.length > 0)
+            .map(paragraph => `<p style="${paragraphStyle}">${paragraph}</p>`)
             .join('');
-            
-        console.log('Výsledný HTML:', result);
-        return result;
     }
 };

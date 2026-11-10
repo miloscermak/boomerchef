@@ -55,49 +55,41 @@
     <script>
         // Načtení všech receptů
         async function loadAllRecipes() {
+            const recipesGrid = document.getElementById('recipes-grid');
             try {
-                console.log('Načítám všechny recepty...');
                 const recipes = await RecipeService.getAllRecipes();
-                console.log('Načtené recepty:', recipes);
-                const recipesGrid = document.getElementById('recipes-grid');
-                
+
                 if (!recipes || recipes.length === 0) {
                     recipesGrid.innerHTML = `
                         <div class="text-center">
                             <p>Zatím zde nejsou žádné recepty.</p>
-                            <a href="admin.html" class="btn-primary">Přidat první recept</a>
                         </div>
                     `;
                     return;
                 }
 
-                const recipesHTML = recipes.map(recipe => {
+                // Karta je skutečný odkaz – funguje klávesnice i otevření v novém panelu
+                recipesGrid.innerHTML = recipes.map(recipe => {
                     const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
-                    // Příběh může být HTML (z editoru) – před oříznutím odstraníme tagy,
-                    // jinak by se do karty dostal neuzavřený <p> a rozbil mřížku.
-                    const plainStory = recipe.story ? recipe.story.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
-                    const shortStory = plainStory ? plainStory.substring(0, 150) + '...' : '';
-                    
+
                     return `
-                        <div class="recipe-card" onclick="window.location.href='recept.html?slug=${recipe.slug}'">
-                            <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                        <a class="recipe-card" href="recept.html?slug=${encodeURIComponent(recipe.slug)}">
+                            <img src="${imageUrl}" alt="${Utils.escapeHtml(recipe.image_alt || recipe.title)}" loading="lazy">
                             <div class="recipe-card-content">
-                                <h3>${recipe.title}</h3>
-                                <p>${shortStory}</p>
+                                <h3>${Utils.escapeHtml(recipe.title)}</h3>
+                                <p>${Utils.storyPreview(recipe.story, 150)}</p>
                                 <div class="recipe-meta">
                                     <small>${Utils.formatDate(recipe.created_at)}</small>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     `;
                 }).join('');
-
-                recipesGrid.innerHTML = recipesHTML;
             } catch (error) {
                 console.error('Chyba při načítání receptů:', error);
-                document.getElementById('recipes-grid').innerHTML = `
+                recipesGrid.innerHTML = `
                     <div class="text-center">
-                        <p>Chyba při načítání receptů. Zkontrolujte Supabase konfiguraci.</p>
+                        <p>Recepty se nepodařilo načíst. Zkuste to prosím znovu.</p>
                     </div>
                 `;
             }

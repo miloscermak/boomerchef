@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">Recept - BoomerChef</title>
+    <title>Recept - BoomerChef</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,10 +71,8 @@
             }
 
             try {
-                console.log('Načítám recept pro slug:', slug);
                 const recipe = await RecipeService.getRecipeBySlug(slug);
-                console.log('Načtený recept:', recipe);
-                
+
                 if (!recipe) {
                     document.getElementById('recipe-content').innerHTML = `
                         <div class="error">
@@ -87,64 +85,10 @@
                 }
 
                 // Nastavení title stránky
-                document.getElementById('page-title').textContent = `${recipe.title} - Boomerchef`;
-                
-                // Vytvoření HTML pro recept
-                const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
-                
-                // Ultraběžpečné zpracování ingrediencí - debug verze
-                console.log('Typ ingredients:', typeof recipe.ingredients);
-                console.log('Obsah ingredients:', recipe.ingredients);
-                
-                let ingredientsList = '';
-                try {
-                    if (recipe.ingredients) {
-                        if (Array.isArray(recipe.ingredients)) {
-                            console.log('Ingredients je array');
-                            ingredientsList = recipe.ingredients
-                                .filter(ingredient => ingredient && String(ingredient).trim())
-                                .map(ingredient => `<li>${String(ingredient).trim()}</li>`)
-                                .join('');
-                        } else {
-                            console.log('Ingredients není array, konvertuji na string');
-                            const ingredientsStr = String(recipe.ingredients);
-                            ingredientsList = ingredientsStr.split('\n')
-                                .filter(ingredient => ingredient.trim())
-                                .map(ingredient => `<li>${ingredient.trim()}</li>`)
-                                .join('');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Chyba při zpracování ingredients:', e);
-                    ingredientsList = '<li>Chyba při načítání ingrediencí</li>';
-                }
+                document.title = `${recipe.title} - BoomerChef`;
 
-                // Ultraběžpečné zpracování instrukcí - debug verze
-                console.log('Typ instructions:', typeof recipe.instructions);
-                console.log('Obsah instructions:', recipe.instructions);
-                
-                let instructionsList = '';
-                try {
-                    if (recipe.instructions) {
-                        if (Array.isArray(recipe.instructions)) {
-                            console.log('Instructions je array');
-                            instructionsList = recipe.instructions
-                                .filter(instruction => instruction && String(instruction).trim())
-                                .map(instruction => `<li>${String(instruction).trim()}</li>`)
-                                .join('');
-                        } else {
-                            console.log('Instructions není array, konvertuji na string');
-                            const instructionsStr = String(recipe.instructions);
-                            instructionsList = instructionsStr.split('\n')
-                                .filter(instruction => instruction.trim())
-                                .map(instruction => `<li>${instruction.trim()}</li>`)
-                                .join('');
-                        }
-                    }
-                } catch (e) {
-                    console.error('Chyba při zpracování instructions:', e);
-                    instructionsList = '<li>Chyba při načítání instrukcí</li>';
-                }
+                const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
+                const title = Utils.escapeHtml(recipe.title);
 
                 const recipeHTML = `
                     <article class="recipe-detail">
@@ -152,17 +96,16 @@
                             <nav class="breadcrumb">
                                 <a href="index.html">Domů</a> > 
                                 <a href="recepty.html">Recepty</a> > 
-                                <span>${recipe.title}</span>
+                                <span>${title}</span>
                             </nav>
-                            <h1 class="recipe-title">${recipe.title}</h1>
+                            <h1 class="recipe-title">${title}</h1>
                             <div class="recipe-meta">
                                 <span>Publikováno: ${Utils.formatDate(recipe.created_at)}</span>
-                                ${recipe.prep_time ? `<span>Příprava: ${recipe.prep_time} min</span>` : ''}
-                                ${recipe.cook_time ? `<span>Vaření: ${recipe.cook_time} min</span>` : ''}
+                                ${recipe.cooking_time ? `<span>Příprava: ${recipe.cooking_time} min</span>` : ''}
                                 ${recipe.servings ? `<span>Porce: ${recipe.servings}</span>` : ''}
                             </div>
                             <div class="recipe-header-actions">
-                                <a href="#" onclick="openPrintView(); return false;" class="btn-print">Chci jen recept</a>
+                                <a href="recept-tisk.html?slug=${encodeURIComponent(recipe.slug)}" target="_blank" class="btn-print">Chci jen recept</a>
                             </div>
                         </header>
 
@@ -170,7 +113,7 @@
                             <!-- Levý sloupec - článek -->
                             <div class="recipe-article-column">
                                 <div class="recipe-image">
-                                    <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                                    <img src="${imageUrl}" alt="${Utils.escapeHtml(recipe.image_alt || recipe.title)}">
                                 </div>
                                 
                                 ${recipe.story ? `
@@ -179,30 +122,22 @@
                                     </div>
                                 ` : ''}
 
-                                ${recipe.notes ? `
-                                    <div class="recipe-notes-section">
-                                        <h3>Poznámky</h3>
-                                        <div class="recipe-notes">
-                                            ${Utils.formatStoryText(recipe.notes)}
-                                        </div>
-                                    </div>
-                                ` : ''}
                             </div>
 
                             <!-- Pravý sloupec - recept -->
                             <div class="recipe-instructions-column">
-                                <div class="recipe-card">
+                                <div class="recipe-box">
                                     <div class="recipe-section">
                                         <h3>Ingredience</h3>
                                         <ul class="ingredients-list">
-                                            ${ingredientsList}
+                                            ${Utils.toListItems(recipe.ingredients)}
                                         </ul>
                                     </div>
 
                                     <div class="recipe-section">
                                         <h3>Postup přípravy</h3>
                                         <ol class="instructions-list">
-                                            ${instructionsList}
+                                            ${Utils.toListItems(recipe.instructions)}
                                         </ol>
                                     </div>
 
@@ -217,9 +152,6 @@
 
                 document.getElementById('recipe-content').innerHTML = recipeHTML;
 
-                // Globální proměnná pro přístup k receptu
-                window.currentRecipe = recipe;
-
             } catch (error) {
                 console.error('Chyba při načítání receptu:', error);
                 document.getElementById('recipe-content').innerHTML = `
@@ -229,15 +161,6 @@
                         <a href="recepty.html" class="btn-primary">Zpět na recepty</a>
                     </div>
                 `;
-            }
-        }
-
-        // Funkce pro otevření print view
-        function openPrintView() {
-            const slug = getSlugFromURL();
-            if (slug) {
-                const printUrl = `recept-tisk.html?slug=${slug}`;
-                window.open(printUrl, '_blank');
             }
         }
 
@@ -290,15 +213,9 @@
             margin-top: var(--spacing-xl);
         }
 
-        .recipe-article-column {
-            /* Levý sloupec - článek */
-        }
-
-        .recipe-instructions-column {
-            /* Pravý sloupec - recept */
-        }
-
-        .recipe-card {
+        /* Box se surovinami a postupem. Záměrně ne .recipe-card – ta patří klikacím
+           kartám v přehledu receptů (kurzor ruky, nadzvednutí při hoveru). */
+        .recipe-box {
             background: var(--white);
             border-radius: 12px;
             padding: var(--spacing-xl);
@@ -308,24 +225,16 @@
             top: var(--spacing-lg);
         }
 
+        .recipe-box h3 {
+            font-size: 1.2rem;
+        }
+
         .recipe-story h2 {
             font-family: var(--font-serif);
             color: var(--primary-color);
             font-size: 1.8rem;
             margin-bottom: var(--spacing-lg);
             margin-top: var(--spacing-lg);
-        }
-
-        .recipe-notes-section {
-            margin-top: var(--spacing-xl);
-            padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--light-gray);
-        }
-
-        .recipe-notes-section h3 {
-            font-family: var(--font-serif);
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-md);
         }
 
         .recipe-header-actions {
@@ -403,20 +312,13 @@
             color: var(--medium-gray);
         }
 
-        .recipe-notes {
-            background: var(--cream);
-            padding: var(--spacing-md);
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-        }
-
         @media (max-width: 768px) {
             .recipe-two-column {
                 grid-template-columns: 1fr;
                 gap: var(--spacing-lg);
             }
 
-            .recipe-card {
+            .recipe-box {
                 position: static;
                 margin-top: var(--spacing-lg);
             }

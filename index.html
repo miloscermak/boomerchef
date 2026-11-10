@@ -22,10 +22,10 @@
     <header>
         <nav class="nav-container">
             <div class="logo">
-                <h1>BoomerChef</h1>
+                <h1><a href="index.html">BoomerChef</a></h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="#" class="nav-link active">Domů</a></li>
+                <li><a href="index.html" class="nav-link active">Domů</a></li>
                 <li><a href="recepty.html" class="nav-link">Recepty</a></li>
                 <li><a href="o-projektu.html" class="nav-link">O projektu</a></li>
             </ul>
@@ -53,72 +53,44 @@
     <script>
         // Načtení nejnovějšího receptu
         async function loadLatestRecipe() {
+            const container = document.getElementById('latest-recipe-content');
             try {
-                console.log('Načítám nejnovější recept...');
-                
-                // Zkusíme se připojit k Supabase
-                if (!window.supabase) {
-                    throw new Error('Supabase není dostupné');
-                }
-                
-                const recipes = await RecipeService.getAllRecipes();
-                console.log('Načtené recepty:', recipes);
-                console.log('Počet receptů:', recipes ? recipes.length : 0);
-                
-                if (!recipes || recipes.length === 0) {
-                    document.getElementById('latest-recipe-content').innerHTML = `
+                const recipe = await RecipeService.getLatestRecipe();
+
+                if (!recipe) {
+                    container.innerHTML = `
                         <div class="no-recipes">
                             <p>Zatím zde nejsou žádné recepty.</p>
-                            <a href="admin.html" class="btn-primary">Přidat první recept</a>
                         </div>
                     `;
                     return;
                 }
 
-                // Nejnovější recept je první (recepty jsou řazené podle created_at DESC)
-                const recipe = recipes[0];
-                console.log('Vybranný recept:', recipe);
-                
                 const imageUrl = recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg';
-                console.log('URL obrázku:', imageUrl);
-                
-                // Bezpečné zpracování story
-                let storyText = '';
-                try {
-                    storyText = recipe.story ? Utils.formatStoryText(recipe.story, 300) : '';
-                } catch (e) {
-                    console.error('Chyba při formátování story:', e);
-                    storyText = recipe.story ? recipe.story.substring(0, 300) + '...' : '';
-                }
-                
-                const html = `
+
+                container.innerHTML = `
                     <article class="recipe-preview">
                         <div class="recipe-preview-image">
-                            <img src="${imageUrl}" alt="${recipe.image_alt || recipe.title}">
+                            <img src="${imageUrl}" alt="${Utils.escapeHtml(recipe.image_alt || recipe.title)}">
                         </div>
                         <div class="recipe-preview-content">
-                            <h3>${recipe.title}</h3>
+                            <h3>${Utils.escapeHtml(recipe.title)}</h3>
                             <div class="recipe-story-preview">
-                                ${storyText}
+                                ${Utils.formatStoryText(recipe.story, 300)}
                             </div>
                             <div class="recipe-actions">
-                                <a href="recept.html?slug=${recipe.slug}" class="btn-primary">Zobrazit recept</a>
+                                <a href="recept.html?slug=${encodeURIComponent(recipe.slug)}" class="btn-primary">Zobrazit recept</a>
                                 <a href="recepty.html" class="btn-secondary">Všechny recepty</a>
                             </div>
                         </div>
                     </article>
                 `;
-                
-                document.getElementById('latest-recipe-content').innerHTML = html;
-                console.log('Recept úspěšně načten a zobrazen');
-                
             } catch (error) {
-                console.error('Detailní chyba:', error);
-                document.getElementById('latest-recipe-content').innerHTML = `
+                console.error('Chyba při načítání receptu:', error);
+                container.innerHTML = `
                     <div class="error">
-                        <p>Chyba při načítání receptu: ${error.message}</p>
-                        <p>Zkontrolujte konzoli pro více detailů.</p>
-                        <a href="admin.html" class="btn-primary">Spravovat recepty</a>
+                        <p>Recept se nepodařilo načíst. Zkuste to prosím znovu.</p>
+                        <a href="recepty.html" class="btn-primary">Všechny recepty</a>
                     </div>
                 `;
             }
