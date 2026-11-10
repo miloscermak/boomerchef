@@ -18,6 +18,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - `recept-tisk.html` – tisková verze receptu
 - `o-projektu.html` – o projektu
 - `admin.html` + `admin-script.js` + `admin-styles.css` – správa receptů (vyžaduje přihlášení přes Supabase Auth)
+- `admin-images.js` – zmenšování obrázků v prohlížeči admina (`ImageOptimizer`): převod na WebP (max. šířka 1400 px) při ručním nahrání i po AI generování, hromadný převod starých obrázků a úklid nepoužívaných souborů ve Storage
 
 ### Sdílené
 - `styles.css` – hlavní styly + CSS custom properties (paleta, spacing, fonty)
@@ -47,7 +48,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
   - `ingredients TEXT[]`, `instructions TEXT[]`
   - `image_url` (jen název souboru v bucketu, plnou URL skládá `ImageService.getImageUrl()`)
   - `is_published`, `featured`, `cooking_time`, `difficulty_level`, `servings`, `category`
-- **Storage bucket:** `recipe-images` (Public).
+- **Storage bucket:** `recipe-images` (Public). Obrázky se ukládají jako **WebP** (cca 100–400 kB místo 2–4 MB PNG) kvůli limitům bezplatného tarifu Supabase. Netlify funkce ukládají původní soubor z xAI a na WebP ho převede až admin v prohlížeči – když admin okno zavře dřív, dožene to tlačítko „Zmenšit obrázky". Soubory mají roční cache, proto se nikdy nepřepisují pod stejným názvem.
 - **RLS:** veřejné čtení publikovaných receptů; zápis jen pro autentifikované. Platí pro `recipes` i `about_page`. V listopadu 2026 se ukázalo, že na produkci bylo RLS na obou tabulkách vypnuté (koncepty šly číst anonymně) – po každém zásahu do schématu zkontroluj Supabase → Advisors → Security. Registrace nových uživatelů musí být v Supabase Auth vypnutá, protože zápis smí každý přihlášený.
 
 ## Konvence

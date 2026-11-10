@@ -176,10 +176,13 @@ async function loadRecipes() {
 // Vykreslení seznamu receptů
 function renderRecipesList(recipes) {
     if (!recipes || recipes.length === 0) {
+        updateImageTools([]);
         recipesList.innerHTML = '<p>Žádné recepty nejsou k dispozici.</p>';
         return;
     }
     
+    updateImageTools(recipes);
+
     recipesList.innerHTML = recipes.map(recipe => `
         <div class="recipe-admin-item">
             <img src="${recipe.image_url ? ImageService.getImageUrl(recipe.image_url) : 'images/placeholder.svg'}"
@@ -258,6 +261,8 @@ async function generateRecipeImage(id, btn) {
         // Počkáme, dokud se image_url u receptu nezmění (max ~3 minuty)
         const newImage = await pollForImageChange(id, originalImage, 36, 5000);
         if (newImage) {
+            // Vygenerovaný obrázek rovnou zmenšíme (WebP), originál se smaže
+            await ImageOptimizer.optimizeGenerated(id, newImage);
             await loadRecipes();
         } else {
             if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
@@ -412,8 +417,10 @@ async function handleRecipeSubmit(e) {
         if (imageFile && imageFile.size > 0) {
             showMessage('progress', 'Nahrávám obrázek...');
             
-            const fileName = `${recipeData.slug}-${Date.now()}.${imageFile.name.split('.').pop()}`;
-            await ImageService.uploadImage(imageFile, fileName);
+            // Před nahráním obrázek zmenšíme a převedeme na WebP
+            const upload = await ImageOptimizer.prepareUpload(imageFile);
+            const fileName = `${recipeData.slug}-${Date.now()}.${upload.extension}`;
+            await ImageService.uploadImage(upload.blob, fileName);
             recipeData.image_url = fileName;
         }
         
@@ -684,6 +691,8 @@ async function handleAiGenerate(e) {
         if (newRecipe) {
             showAiMessage('success', `✅ Recept „${newRecipe.title}" je hotový a otevřený k úpravě. Zkontroluj ho a zaškrtni „Publikovat".`);
             document.getElementById('ai-form').reset();
+            // Vygenerovaný obrázek rovnou zmenšíme (WebP), originál se smaže
+            await ImageOptimizer.optimizeGenerated(newRecipe.id, newRecipe.image_url);
             // Otevřeme nový koncept rovnou v editačním formuláři
             await loadRecipes();
             editRecipe(newRecipe.id);

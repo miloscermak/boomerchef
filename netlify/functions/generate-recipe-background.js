@@ -211,6 +211,8 @@ async function uploadImage(buffer, fileName) {
       Authorization: `Bearer ${serviceKey}`,
       apikey: serviceKey,
       'Content-Type': 'image/png',
+      // unikátní název souboru → prohlížeč si ho může pamatovat rok
+      'cache-control': 'max-age=31536000',
       'x-upsert': 'true'
     },
     body: buffer

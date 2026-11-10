@@ -16,6 +16,7 @@ boomerchef/
 ├── o-projektu.html             # O projektu
 ├── admin.html                  # Administrace (přihlášení přes Supabase Auth)
 ├── admin-script.js             # Logika administrace + AI generování
+├── admin-images.js             # Zmenšování obrázků (WebP) a úklid úložiště
 ├── admin-styles.css            # Styly administrace
 ├── styles.css                  # Hlavní styly + CSS custom properties
 ├── config.js                   # Supabase klient + servisní moduly

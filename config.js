@@ -165,7 +165,9 @@ const ImageService = {
             const { data, error } = await supabaseClient.storage
                 .from(SUPABASE_CONFIG.bucketName)
                 .upload(fileName, file, {
-                    cacheControl: '3600',
+                    // Název souboru obsahuje časové razítko a nikdy se nepřepisuje,
+                    // takže si ho prohlížeč může pamatovat rok a nestahuje ho znovu
+                    cacheControl: '31536000',
                     upsert: true
                 });
             
