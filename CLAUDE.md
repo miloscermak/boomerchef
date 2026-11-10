@@ -19,6 +19,7 @@ Web s tradičními recepty s nostalgickými příběhy. Vibecoding projekt – u
 - `o-projektu.html` – o projektu
 - `admin.html` + `admin-script.js` + `admin-styles.css` – správa receptů (vyžaduje přihlášení přes Supabase Auth)
 - `admin-images.js` – zmenšování obrázků v prohlížeči admina (`ImageOptimizer`): převod na WebP (max. šířka 1400 px) při ručním nahrání i po AI generování, hromadný převod starých obrázků a úklid nepoužívaných souborů ve Storage
+- `admin-backup.js` – tlačítko „Zálohovat" v adminu: stáhne obsah tabulek (`data.json`) a všechny obrázky do složky v počítači. Bezplatný tarif Supabase nemá automatické zálohy, proto zálohovat ručně (jen Chrome/Edge).
 
 ### Sdílené
 - `styles.css` – hlavní styly + CSS custom properties (paleta, spacing, fonty)
